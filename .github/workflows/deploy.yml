@@ -12,27 +12,36 @@ jobs:
 
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v4 # Actualizado a v4
+        uses: actions/checkout@v4
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v4 # Actualizado a v4
+        uses: actions/setup-node@v4
         with:
-          node-version: '20' # Usamos una versión estable y moderna
+          node-version: '20'
           cache: 'npm'
 
       - name: Instalar dependencias
-        run: npm install # Cambiado por npm install para evitar el exit code 3
+        run: npm install
 
       - name: Compilar proyecto (Build Production)
         run: npm run build -- --configuration=production
 
-      - name: Transferir archivos compilados al VPS
-        uses: appleboy/scp-action@master
+      - name: Limpiar carpeta destino en VPS
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "dist/Inventario-ai/browser/*" 
+          script: rm -rf /var/www/seminario1/sgp/*
+
+      - name: Transferir archivos compilados al VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "dist/Inventario-ai/browser/*"
           target: "/var/www/seminario1/sgp/"
           strip_components: 3
