@@ -3,7 +3,8 @@ name: Deploy Angular al VPS
 on:
   push:
     branches:
-      - main  # Cambia a master si tu rama principal se llama así
+      - main  # Ya quedó configurado en tu rama main
+  workflow_dispatch: # Esto nos deja activarlo manualmente también
 
 jobs:
   build-and-deploy:
@@ -16,7 +17,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18' # O la versión que uses
+          node-version: '18'
           cache: 'npm'
 
       - name: Instalar dependencias
@@ -32,7 +33,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          # Aquí ya usamos el nombre real de tu proyecto:
           source: "dist/Inventario-ai/browser/*" 
           target: "/var/www/seminario1/sgp/"
           strip_components: 3
