@@ -1,0 +1,34 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Iniciar Sesión</h2>
+
+    @if (mensajeError()) {
+      <div class="alert alert-danger">{{ mensajeError() }}</div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" formControlName="correo" placeholder="ejemplo@correo.com">
+        @if (loginForm.get('correo')?.touched && loginForm.get('correo')?.invalid) {
+          <small class="error-text">El correo es requerido y debe ser válido.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" formControlName="password" placeholder="Tu contraseña">
+        @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+          <small class="error-text">La contraseña es requerida.</small>
+        }
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid" class="btn-primary">Ingresar</button>
+    </form>
+
+    <p class="auth-switch">
+      ¿No tienes una cuenta? <a routerLink="/registro">Regístrate aquí</a>
+    </p>
+  </div>
+</div>

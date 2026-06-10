@@ -1,0 +1,109 @@
+.management-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 1rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #1e293b;
+  text-align: left;
+}
+
+.page-header p {
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.roles-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.roles-table th {
+  background-color: #f8fafc;
+  color: #64748b;
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.roles-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+/* Badges dinámicos para los roles */
+.role-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.role-badge.admin { background-color: #fee2e2; color: #ef4444; }
+.role-badge.user { background-color: #d1fae5; color: #10b981; }
+
+/* Selector de Roles */
+.select-role {
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background-color: white;
+  color: #334155;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.select-role:focus {
+  border-color: #2563eb;
+}
+.action-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: #15803d;
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-save .ti {
+  font-size: 15px;
+}
