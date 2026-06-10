@@ -3,8 +3,8 @@ name: Deploy Angular al VPS
 on:
   push:
     branches:
-      - main  # Ya quedó configurado en tu rama main
-  workflow_dispatch: # Esto nos deja activarlo manualmente también
+      - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -12,16 +12,16 @@ jobs:
 
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Actualizado a v4
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # Actualizado a v4
         with:
-          node-version: '18'
+          node-version: '20' # Usamos una versión estable y moderna
           cache: 'npm'
 
       - name: Instalar dependencias
-        run: npm ci
+        run: npm install # Cambiado por npm install para evitar el exit code 3
 
       - name: Compilar proyecto (Build Production)
         run: npm run build -- --configuration=production
