@@ -1,0 +1,38 @@
+name: Deploy Angular al VPS
+
+on:
+  push:
+    branches:
+      - master  # Cambia a master si tu rama principal se llama así
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # O la versión que uses
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar proyecto (Build Production)
+        run: npm run build -- --configuration=production
+
+      - name: Transferir archivos compilados al VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          # Aquí ya usamos el nombre real de tu proyecto:
+          source: "dist/Inventario-ai/browser/*" 
+          target: "/var/www/seminario1/sgp/"
+          strip_components: 3
