@@ -3,7 +3,7 @@ name: Deploy Angular al VPS
 on:
   push:
     branches:
-      - master  # Cambia a master si tu rama principal se llama así
+      - main  # Cambia a master si tu rama principal se llama así
 
 jobs:
   build-and-deploy:
