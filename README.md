@@ -1,6 +1,6 @@
 #JOSE ALBERTO RODRIGUEZ PANAMEÑO
 #ERIN KAMILA GARCES
-#JENNIFER
+#JENNIFER GRAIN RAMIREZ
 
 # 📦 InventarioAI — Sistema de Gestión de Inventario de Contenedores
 
