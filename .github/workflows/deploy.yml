@@ -26,22 +26,33 @@ jobs:
       - name: Compilar proyecto (Build Production)
         run: npm run build -- --configuration=production
 
-      - name: Limpiar carpeta destino en VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: rm -rf /var/www/seminario1/sgp/*
+      - name: Comprimir archivos compilados
+        run: tar -czf frontend.tar.gz -C dist/Inventario-ai/browser .
 
-      - name: Transferir archivos compilados al VPS
+      - name: Subir archivo comprimido al VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "dist/Inventario-ai/browser/*"
+          source: "frontend.tar.gz"
           target: "/var/www/seminario1/sgp/"
-          strip_components: 3
+
+      - name: Limpiar, descomprimir y dejar listo en VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script_stop: true
+          script: |
+            cd /var/www/seminario1/sgp/
+            mkdir ../tmp_tar
+            mv frontend.tar.gz ../tmp_tar/
+            rm -rf *
+            mv ../tmp_tar/frontend.tar.gz .
+            rm -rf ../tmp_tar
+            tar -xzf frontend.tar.gz
+            rm frontend.tar.gz
