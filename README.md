@@ -1,59 +1,109 @@
-# InventarioAi
+#JOSE ALBERTO RODRIGUEZ PANAMEÑO
+#ERIN KAMILA GARCES
+#JENNIFER GRAIN RAMIREZ
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.12.
+# 📦 InventarioAI — Sistema de Gestión de Inventario de Contenedores
 
-## Development server
+Sistema web desarrollado con **Angular** para la gestión y seguimiento de inventario de contenedores. Permite registrar, consultar y administrar contenedores en tiempo real, con control de acceso por usuarios y generación de reportes.
 
-To start a local development server, run:
+---
+
+## 🚀 Características principales
+
+- **Gestión de contenedores:** Crear, editar y eliminar registros de contenedores con sus respectivos atributos.
+- **Inventario en tiempo real:** Visualización actualizada del estado y disponibilidad de los contenedores.
+- **Reportes y estadísticas:** Generación de reportes para análisis y toma de decisiones.
+- **Autenticación y usuarios:** Sistema de login con control de acceso por roles.
+
+---
+
+## 🛠️ Tecnologías utilizadas
+
+| Tecnología | Descripción |
+|---|---|
+| [Angular](https://angular.dev) v21 | Framework frontend |
+| TypeScript | Lenguaje principal |
+| CSS | Estilos de la aplicación |
+| GitHub Actions | CI/CD para despliegue automático |
+
+---
+
+## 📁 Estructura del proyecto
+
+```
+Inventario-ai/
+├── src/
+│   ├── app/
+│   │   ├── components/     # Componentes reutilizables
+│   │   ├── pages/          # Vistas principales
+│   │   ├── services/       # Servicios y lógica de negocio
+│   │   └── models/         # Interfaces y modelos
+│   ├── assets/             # Recursos estáticos
+│   └── styles.css          # Estilos globales
+├── public/                 # Archivos públicos
+├── .github/workflows/      # Pipeline CI/CD
+├── angular.json            # Configuración Angular
+└── package.json            # Dependencias
+```
+
+---
+
+## ⚙️ Instalación y uso local
+
+### Prerrequisitos
+
+- Node.js v20 o superior
+- npm v9 o superior
+- Angular CLI v21
+
+### Pasos
 
 ```bash
+# 1. Clonar el repositorio
+git clone https://github.com/Ironman2201-max/Inventario-ai.git
+cd Inventario-ai
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Iniciar servidor de desarrollo
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abre el navegador en `http://localhost:4200`
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🏗️ Build para producción
 
 ```bash
-ng generate --help
+ng build --configuration=production
 ```
 
-## Building
+Los archivos compilados se generan en `dist/Inventario-ai/browser/`.
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## 🚢 Despliegue
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+El proyecto utiliza **GitHub Actions** para el despliegue automático en el VPS cada vez que se hace push a la rama `main`.
 
-## Running unit tests
+### Secrets requeridos en GitHub
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+| Secret | Descripción |
+|---|---|
+| `SERVER_IP` | Dirección IP del servidor |
+| `SERVER_USER` | Usuario SSH del servidor |
+| `SSH_PRIVATE_KEY` | Llave privada SSH |
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## 👥 Equipo de desarrollo
 
-For end-to-end (e2e) testing, run:
+Proyecto desarrollado como parte del **Seminario 1**.
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 📄 Licencia
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Este proyecto es de uso académico.
