@@ -1,0 +1,82 @@
+<div class="billing-container">
+  <h2>🧾 Facturación Electrónica DIAN (Módulo Factus)</h2>
+  <p>Generación de comprobantes y liquidación fiscal de servicios de almacenamiento de patio.</p>
+
+  <div *ngIf="error()" class="alert error-alert">
+    <h4>⚠️ Error de Validación (DIAN / Factus)</h4>
+    <p>{{ error() }}</p>
+    
+    <div *ngIf="facturaForm.controls" class="error-debug">
+      <p>Revise que los datos del cliente correspondan a un NIT/Cédula real en el ambiente de pruebas.</p>
+    </div>
+  </div>
+
+  <div *ngIf="facturaExitosa()" class="alert success-alert">
+    <h3>✅ ¡Factura Emitida Exitosamente!</h3>
+    <p><strong>Número Legal:</strong> {{ facturaExitosa().number }}</p>
+    <p><strong>CUFE:</strong> <span class="cufe-text">{{ facturaExitosa().cufe }}</span></p>
+    <div class="actions">
+      <a [href]="facturaExitosa().public_url" target="_blank" class="btn btn-download">
+        📄 Ver PDF Oficial DIAN
+      </a>
+    </div>
+  </div>
+
+  <form (ngSubmit)="procesarFactura()" #facturaForm="ngForm" class="invoice-form">
+    
+    <div class="form-group">
+      <label>ID del Contenedor a Liquidar *</label>
+      <input type="number" [(ngModel)]="form.container_id" name="container_id" placeholder="Ej: 3" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tipo de Persona</label>
+        <select [(ngModel)]="form.legal_organization_id" name="legal_organization_id">
+          <option [value]="2">Persona Natural</option>
+          <option [value]="1">Persona Jurídica (Empresa)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tipo Documento</label>
+        <select [(ngModel)]="form.identification_document_id" name="identification_document_id">
+          <option [value]="1" *ngIf="form.legal_organization_id == 2">Cédula de Ciudadanía</option>
+          <option [value]="3" *ngIf="form.legal_organization_id == 1">NIT (Número de Identificación Tributaria)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Documento / NIT (Sin dígito) *</label>
+        <input type="text" [(ngModel)]="form.customer_nit" name="customer_nit" placeholder="Ej: 11111111" required>
+      </div>
+
+      <div class="form-group short-input" *ngIf="form.legal_organization_id == 1">
+        <label>DV</label>
+        <input type="text" [(ngModel)]="form.dv" name="dv" placeholder="0" maxlength="1">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Nombre Completo / Razón Social *</label>
+      <input type="text" [(ngModel)]="form.customer_name" name="customer_name" placeholder="Ej: Transportes del Pacífico S.A.S" required>
+    </div>
+
+    <div class="form-group">
+      <label>Correo Electrónico (Para envío del XML/PDF) *</label>
+      <input type="email" [(ngModel)]="form.email" name="email" placeholder="cliente@correo.com" required>
+    </div>
+
+    <div class="form-group">
+      <label>Subtotal Servicio Patio ($ COP) *</label>
+      <input type="number" [(ngModel)]="form.subtotal" name="subtotal" placeholder="Valor antes de IVA" required>
+      <small class="tax-indicator">Se autocalculará +19% de IVA según normativa legal.</small>
+    </div>
+
+    <button type="submit" class="btn btn-submit" [disabled]="cargando()">
+      {{ cargando() ? '⏳ Timbrando ante la DIAN...' : '🚀 Emitir Factura Electrónica' }}
+    </button>
+  </form>
+</div>
