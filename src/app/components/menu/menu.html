@@ -9,16 +9,25 @@
     </div>
 
     <ul class="nav-links">
+
+  <li>
+    @if (usuario()?.rol === 'admin') {
+      <a routerLink="/admin-dashboard" routerLinkActive="active">
+        <span>🏠</span>
+        <span>Inicio Admin</span>
+      </a>
+    } @else {
+      <a routerLink="/user-dashboard" routerLinkActive="active">
+        <span>🏠</span>
+        <span>Mi Perfil</span>
+      </a>
+    }
+  </li>
       <li>
-        @if (usuario()?.rol === 'admin') {
-          <a routerLink="/admin-dashboard" routerLinkActive="active">🏠 Inicio Admin</a>
-        } @else {
-          <a routerLink="/user-dashboard" routerLinkActive="active">🏠 Mi Perfil</a>
-        }
-      </li>
-      
-      <li>
-        <a routerLink="/compras" routerLinkActive="active">🛒 Mis Compras</a>
+      <a routerLink="/compras" routerLinkActive="active">
+        <span>🛒</span>
+        <span>Mis Compras</span>
+      </a>
       </li>
 
       @if (usuario()?.rol === 'admin') {
@@ -40,6 +49,10 @@
         <li>
           <a routerLink="/contenedores/inventario" routerLinkActive="active">📦 Inventario de Patio</a>
         </li>
+        <li>
+          <a routerLink="/facturacion" routerLinkActive="active-menu">🧾 Facturación Electrónica</a>
+        </li>
+
       }
     </ul>
 
