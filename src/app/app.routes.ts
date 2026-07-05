@@ -23,6 +23,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { expectedRole: 'user' } 
   },
+  {
+    path: 'facturacion',
+    loadComponent: () => import('./modules/billing/invoice-form/invoice-form').then(m => m.InvoiceForm)
+  }, 
   { 
     path: 'gestion-usuarios', 
     component: GestionUsuarios,
@@ -30,7 +34,8 @@ export const routes: Routes = [
     data: { expectedRole: 'admin' } 
   },
  { path: 'contenedores/registro', component: ContainerRegister },
-      
+ 
+  
     { path: 'contenedores/inventario', component: ContainerList },
   // Redirección por defecto si la ruta no existe
   { path: '', redirectTo: '/login', pathMatch: 'full' },

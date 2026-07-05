@@ -14,8 +14,9 @@ export interface Movement {
   id?: number;
   container_id: number;
   user_id: number;
-  movement_type: 'ENTRY' | 'EXIT';
+  movement_type: 'ENTRY' | 'EXIT' | string; // Corregido sin comillas
   latitude: number;
   longitude: number;
+  observation?: string; // 👈 Agrégala aquí si la vas a usar
   created_at?: string;
 }
