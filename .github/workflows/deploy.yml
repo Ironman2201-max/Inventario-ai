@@ -1,4 +1,4 @@
-name: Deploy Angular al VPS
+name: Deploy Angular al VPS del Profe Lucio
 
 on:
   push:
