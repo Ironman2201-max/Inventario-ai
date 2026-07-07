@@ -48,11 +48,14 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            cd /var/www/seminario1/sgp/
-            mkdir ../tmp_tar
-            mv frontend.tar.gz ../tmp_tar/
-            rm -rf *
-            mv ../tmp_tar/frontend.tar.gz .
-            rm -rf ../tmp_tar
-            tar -xzf frontend.tar.gz
-            rm frontend.tar.gz
+            # 1. Mover el archivo subido a la carpeta /tmp del sistema para operar de forma segura
+            mv /var/www/seminario1/sgp/frontend.tar.gz /tmp/frontend.tar.gz
+
+            # 2. Vaciar por completo la carpeta de producción sin salir de ella ni usar rutas relativas peligrosas
+            rm -rf /var/www/seminario1/sgp/*
+
+            # 3. Descomprimir el contenido directamente en la carpeta destino
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
+
+            # 4. Eliminar el archivo comprimido temporal del servidor
+            rm /tmp/frontend.tar.gz
