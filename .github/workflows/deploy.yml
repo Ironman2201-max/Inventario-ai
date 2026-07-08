@@ -30,12 +30,15 @@ jobs:
         run: tar -czf frontend.tar.gz -C dist/Inventario-ai/browser .
 
       - name: Configurar llave SSH temporal
+        env:
+          # Pasamos el secreto como variable de entorno para proteger los caracteres especiales
+          SSH_KEY_ENV: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
 
-          # Usamos un Heredoc para guardar la llave de forma segura sin romper los saltos de línea
+          # Guardamos la variable de entorno directamente usando un Heredoc limpio
           cat << 'EOF' > ~/.ssh/id_ed25519
-          ${{ secrets.SSH_PRIVATE_KEY }}
+          $SSH_KEY_ENV
           EOF
 
           chmod 600 ~/.ssh/id_ed25519
@@ -49,7 +52,6 @@ jobs:
       - name: Limpiar, descomprimir y dejar listo en VPS (Nativo)
         run: |
           ssh -p 22 -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            # Detener el script inmediatamente si algún comando falla
             set -e
 
             # 1. Mover el archivo subido a la carpeta /tmp de forma segura
