@@ -1,4 +1,4 @@
-name: Deploy Angular al VPS del Profe Lucio
+name: Deploy Angular al VPS
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Instalar dependencias
@@ -29,33 +29,33 @@ jobs:
       - name: Comprimir archivos compilados
         run: tar -czf frontend.tar.gz -C dist/Inventario-ai/browser .
 
-      - name: Subir archivo comprimido al VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: "frontend.tar.gz"
-          target: "/var/www/seminario1/sgp/"
+      - name: Configurar llave SSH temporal
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # Escanea el servidor para agregarlo a los hosts conocidos y evitar bloqueos de seguridad
+          ssh-keyscan -p 22 -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Limpiar, descomprimir y dejar listo en VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            # 1. Mover el archivo subido a la carpeta /tmp del sistema para operar de forma segura
+      - name: Subir archivo comprimido al VPS (Nativo)
+        run: |
+          scp -P 22 -i ~/.ssh/id_ed25519 frontend.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/seminario1/sgp/
+
+      - name: Limpiar, descomprimir y dejar listo en VPS (Nativo)
+        run: |
+          ssh -p 22 -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            # Detener el script inmediatamente si algún comando falla
+            set -e
+
+            # 1. Mover el archivo subido a la carpeta /tmp de forma segura
             mv /var/www/seminario1/sgp/frontend.tar.gz /tmp/frontend.tar.gz
 
-            # 2. Vaciar por completo la carpeta de producción sin salir de ella ni usar rutas relativas peligrosas
+            # 2. Limpiar la carpeta de producción de la app de Angular
             rm -rf /var/www/seminario1/sgp/*
 
-            # 3. Descomprimir el contenido directamente en la carpeta destino
+            # 3. Descomprimir el nuevo build en la ruta destino
             tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
 
-            # 4. Eliminar el archivo comprimido temporal del servidor
+            # 4. Eliminar el archivo temporal comprimido
             rm /tmp/frontend.tar.gz
+          EOF
