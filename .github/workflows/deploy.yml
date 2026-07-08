@@ -1,70 +1,115 @@
 name: Deploy Angular al VPS
 
+
+
 on:
+
   push:
+
     branches:
+
       - main
+
   workflow_dispatch:
 
+
+
 jobs:
+
   build-and-deploy:
+
     runs-on: ubuntu-latest
 
+
+
     steps:
+
       - name: Checkout del código
+
         uses: actions/checkout@v4
 
+
+
       - name: Configurar Node.js
+
         uses: actions/setup-node@v4
+
         with:
-          node-version: '24'
+
+          node-version: '20'
+
           cache: 'npm'
 
+
+
       - name: Instalar dependencias
+
         run: npm install
 
+
+
       - name: Compilar proyecto (Build Production)
+
         run: npm run build -- --configuration=production
 
+
+
       - name: Comprimir archivos compilados
+
         run: tar -czf frontend.tar.gz -C dist/Inventario-ai/browser .
 
-      - name: Configurar llave SSH temporal
-        env:
-          SSH_KEY_ENV: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          printf "%s\n" "$SSH_KEY_ENV" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 22 -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-      - name: Verificar secrets sin revelar valores
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          echo "SERVER_USER lineas: $(printf "%s" "$SERVER_USER" | wc -l)"
-          echo "SERVER_IP lineas: $(printf "%s" "$SERVER_IP" | wc -l)"
-          echo "SSH_PRIVATE_KEY lineas: $(printf "%s" "$SSH_PRIVATE_KEY" | wc -l)"
+
 
       - name: Subir archivo comprimido al VPS
-        run: |
-          scp -P 22 -i ~/.ssh/id_ed25519 frontend.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/seminario1/sgp/
 
-      - name: Limpiar, descomprimir y dejar listo en VPS (Nativo)
-        run: |
-          ssh -p 22 -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            set -e
+        uses: appleboy/scp-action@v0.1.7
 
-            # 1. Mover el archivo subido a la carpeta /tmp de forma segura
-            mv /var/www/seminario1/sgp/frontend.tar.gz /tmp/frontend.tar.gz
+        with:
 
-            # 2. Limpiar la carpeta de producción de la app de Angular
-            rm -rf /var/www/seminario1/sgp/*
+          host: ${{ secrets.SERVER_IP }}
 
-            # 3. Descomprimir el nuevo build en la ruta destino
-            tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
+          username: ${{ secrets.SERVER_USER }}
 
-            # 4. Eliminar el archivo temporal comprimido
-            rm /tmp/frontend.tar.gz
-          EOF
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          port: 22
+
+          source: "frontend.tar.gz"
+
+          target: "/var/www/seminario1/sgp/"
+
+
+
+      - name: Limpiar, descomprimir y dejar listo en VPS
+
+        uses: appleboy/ssh-action@v1.0.3
+
+        with:
+
+          host: ${{ secrets.SERVER_IP }}
+
+          username: ${{ secrets.SERVER_USER }}
+
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          port: 22
+
+          script_stop: true
+
+          script: |
+
+            cd /var/www/seminario1/sgp/
+
+            mkdir ../tmp_tar
+
+            mv frontend.tar.gz ../tmp_tar/
+
+            rm -rf *
+
+            mv ../tmp_tar/frontend.tar.gz .
+
+            rm -rf ../tmp_tar
+
+            tar -xzf frontend.tar.gz
+
+            rm frontend.tar.gz
