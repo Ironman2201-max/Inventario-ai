@@ -1,115 +1,61 @@
 name: Deploy Angular al VPS
 
-
-
 on:
-
   push:
-
     branches:
-
       - main
-
   workflow_dispatch:
 
-
-
 jobs:
-
   build-and-deploy:
-
     runs-on: ubuntu-latest
 
-
-
     steps:
-
       - name: Checkout del código
-
         uses: actions/checkout@v4
 
-
-
       - name: Configurar Node.js
-
         uses: actions/setup-node@v4
-
         with:
-
-          node-version: '20'
-
+          node-version: '24' # Actualizado a la versión estable para evitar warnings
           cache: 'npm'
 
-
-
       - name: Instalar dependencias
-
         run: npm install
 
-
-
       - name: Compilar proyecto (Build Production)
-
         run: npm run build -- --configuration=production
 
-
-
       - name: Comprimir archivos compilados
-
         run: tar -czf frontend.tar.gz -C dist/Inventario-ai/browser .
 
-
-
       - name: Subir archivo comprimido al VPS
-
         uses: appleboy/scp-action@v0.1.7
-
         with:
-
           host: ${{ secrets.SERVER_IP }}
-
           username: ${{ secrets.SERVER_USER }}
-
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-
           port: 22
-
           source: "frontend.tar.gz"
-
           target: "/var/www/seminario1/sgp/"
 
-
-
       - name: Limpiar, descomprimir y dejar listo en VPS
-
         uses: appleboy/ssh-action@v1.0.3
-
         with:
-
           host: ${{ secrets.SERVER_IP }}
-
           username: ${{ secrets.SERVER_USER }}
-
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-
           port: 22
-
           script_stop: true
-
           script: |
+            # 1. Mover el archivo recién subido a la carpeta /tmp del sistema (donde sí hay permisos)
+            mv /var/www/seminario1/sgp/frontend.tar.gz /tmp/frontend.tar.gz
 
-            cd /var/www/seminario1/sgp/
+            # 2. Vaciar de forma segura el contenido viejo de tu app de Angular
+            rm -rf /var/www/seminario1/sgp/*
 
-            mkdir ../tmp_tar
+            # 3. Descomprimir el archivo directamente en tu carpeta productiva
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
 
-            mv frontend.tar.gz ../tmp_tar/
-
-            rm -rf *
-
-            mv ../tmp_tar/frontend.tar.gz .
-
-            rm -rf ../tmp_tar
-
-            tar -xzf frontend.tar.gz
-
-            rm frontend.tar.gz
+            # 4. Limpiar el archivo temporal para no dejar basura en el servidor
+            rm /tmp/frontend.tar.gz
