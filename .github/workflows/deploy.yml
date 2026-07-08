@@ -32,9 +32,14 @@ jobs:
       - name: Configurar llave SSH temporal
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+
+          # Usamos un Heredoc para guardar la llave de forma segura sin romper los saltos de línea
+          cat << 'EOF' > ~/.ssh/id_ed25519
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
+
           chmod 600 ~/.ssh/id_ed25519
-          # Escanea el servidor para agregarlo a los hosts conocidos y evitar bloqueos de seguridad
+          # Escanea el servidor para agregarlo a los hosts conocidos
           ssh-keyscan -p 22 -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Subir archivo comprimido al VPS (Nativo)
