@@ -31,21 +31,16 @@ jobs:
 
       - name: Configurar llave SSH temporal
         env:
-          # Pasamos el secreto como variable de entorno para proteger los caracteres especiales
           SSH_KEY_ENV: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
 
-          # Guardamos la variable de entorno directamente usando un Heredoc limpio
-          cat << 'EOF' > ~/.ssh/id_ed25519
-          $SSH_KEY_ENV
-          EOF
-
+          printf "%s\n" "$SSH_KEY_ENV" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          # Escanea el servidor para agregarlo a los hosts conocidos
+
           ssh-keyscan -p 22 -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Subir archivo comprimido al VPS (Nativo)
+      - name: Subir archivo comprimido al VPS
         run: |
           scp -P 22 -i ~/.ssh/id_ed25519 frontend.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/var/www/seminario1/sgp/
 
