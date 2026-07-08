@@ -34,11 +34,18 @@ jobs:
           SSH_KEY_ENV: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-
           printf "%s\n" "$SSH_KEY_ENV" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-
           ssh-keyscan -p 22 -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: Verificar secrets sin revelar valores
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "SERVER_USER lineas: $(printf "%s" "$SERVER_USER" | wc -l)"
+          echo "SERVER_IP lineas: $(printf "%s" "$SERVER_IP" | wc -l)"
+          echo "SSH_PRIVATE_KEY lineas: $(printf "%s" "$SSH_PRIVATE_KEY" | wc -l)"
 
       - name: Subir archivo comprimido al VPS
         run: |
