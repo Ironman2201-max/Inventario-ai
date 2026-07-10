@@ -15,8 +15,8 @@ Sistema web desarrollado para la gestión y seguimiento de inventario de contene
 
 El sistema se encuentra totalmente operativo y desplegado en la siguiente infraestructura:
 
-* **Frontend (Interfaz de Usuario):** `http://200.58.107.100`
-* **Backend (API PHP):** `http://200.58.107.100/api/`
+* **Frontend (Interfaz de Usuario):** `https://sgp.seminario1.eleueleo.com/`
+* **Backend (API PHP):** `C:\xampp\htdocs\angular-backend`
 
 ### 🔑 Credenciales de Acceso para Pruebas (Fase 2)
 Para la evaluación de las restricciones de enrutamiento y control de acceso, utilizar los siguientes usuarios preconfigurados:
