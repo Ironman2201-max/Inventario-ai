@@ -17,7 +17,7 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24' # Actualizado a la versión estable para evitar warnings
           cache: 'npm'
 
       - name: Instalar dependencias
@@ -48,11 +48,14 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            cd /var/www/seminario1/sgp/
-            mkdir ../tmp_tar
-            mv frontend.tar.gz ../tmp_tar/
-            rm -rf *
-            mv ../tmp_tar/frontend.tar.gz .
-            rm -rf ../tmp_tar
-            tar -xzf frontend.tar.gz
-            rm frontend.tar.gz
+            # 1. Mover el archivo recién subido a la carpeta /tmp del sistema (donde sí hay permisos)
+            mv /var/www/seminario1/sgp/frontend.tar.gz /tmp/frontend.tar.gz
+
+            # 2. Vaciar de forma segura el contenido viejo de tu app de Angular
+            rm -rf /var/www/seminario1/sgp/*
+
+            # 3. Descomprimir el archivo directamente en tu carpeta productiva
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
+
+            # 4. Limpiar el archivo temporal para no dejar basura en el servidor
+            rm /tmp/frontend.tar.gz
