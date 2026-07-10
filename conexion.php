@@ -1,21 +1,23 @@
 <?php
-// Permitir que Angular consulte este archivo sin problemas de CORS
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-header("Content-Type: application/json; charset=UTF-8");
-
-// Configuración de la base de datos de XAMPP
+// Configuración de la base de datos de XAMPP / VPS
 $host = "localhost";
-$db_name = "angular_auth_db"; 
 $username = "root";
 $password = ""; // En XAMPP viene vacío por defecto
+$db_name = "inventario_ai"; // Tu base de datos transaccional del proyecto
 
-try {
-    $conexion = new PDO("mysql:host=" . $host . ";dbname=" . $db_name, $username, $password);
-    $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $conexion->exec("set names utf8");
-} catch(PDOException $exception) {
-    echo json_encode(["error" => "Error de conexión: " . $exception->getMessage()]);
+// Crear la conexión usando MySQLi (Obligatorio para que funcione con login.php y los demás)
+$conn = new mysqli($host, $username, $password, $db_name);
+
+// Verificar si hay errores de conexión
+if ($conn->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Error de conexión a la base de datos: " . $conn->connect_error
+    ]);
+    exit();
 }
+
+// Configurar el juego de caracteres a UTF-8 para evitar problemas con tildes o eñes
+$conn->set_charset("utf8");
 ?>
