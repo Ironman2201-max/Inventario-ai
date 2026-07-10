@@ -1,109 +1,54 @@
-#JOSE ALBERTO RODRIGUEZ PANAMEÑO
-#ERIN KAMILA GARCES
-#JENNIFER GRAIN RAMIREZ
-
 # 📦 InventarioAI — Sistema de Gestión de Inventario de Contenedores
 
-Sistema web desarrollado con **Angular** para la gestión y seguimiento de inventario de contenedores. Permite registrar, consultar y administrar contenedores en tiempo real, con control de acceso por usuarios y generación de reportes.
+Sistema web desarrollado para la gestión y seguimiento de inventario de contenedores. Permite registrar, consultar y administrar contenedores en tiempo real, con control de acceso por usuarios y generación de reportes.
 
 ---
 
-## 🚀 Características principales
+## 👥 Equipo de Desarrollo
+- JOSE ALBERTO RODRIGUEZ PANAMEÑO
+- ERIN KAMILA GARCES REYES
+- JENNIFER GRAIN RAMIREZ
+
+---
+
+## 🌐 Despliegue en Producción (VPS)
+
+El sistema se encuentra totalmente operativo y desplegado en la siguiente infraestructura:
+
+* **Frontend (Interfaz de Usuario):** `http://200.58.107.100`
+* **Backend (API PHP):** `http://200.58.107.100/api/`
+
+### 🔑 Credenciales de Acceso para Pruebas (Fase 2)
+Para la evaluación de las restricciones de enrutamiento y control de acceso, utilizar los siguientes usuarios preconfigurados:
+
+| Rol | Usuario / Correo | Contraseña | Descripción |
+|---|---|---|---|
+| **Administrador Principal** | `jsoe@inventario.com` | `admin123` | Acceso total al panel de auditoría y reportes logísticos. |
+| **Administrador Secundario 1** | `jgrainr@inventario.com` | `admin123` | Control operativo limitado de movimientos de patio. |
+| **Administrador Secundario 2** | `kmilagare@inventario.com` | `admin123` | Control operativo limitado de movimientos de patio. |
+
+---
+
+## 🚀 Características Principales
 
 - **Gestión de contenedores:** Crear, editar y eliminar registros de contenedores con sus respectivos atributos.
 - **Inventario en tiempo real:** Visualización actualizada del estado y disponibilidad de los contenedores.
 - **Reportes y estadísticas:** Generación de reportes para análisis y toma de decisiones.
-- **Autenticación y usuarios:** Sistema de login con control de acceso por roles.
+- **Autenticación y usuarios (JWT):** Sistema de login con control de acceso por roles y protección de rutas mediante Guards.
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## 🛠️ Tecnologías Utilizadas
 
 | Tecnología | Descripción |
 |---|---|
 | [Angular](https://angular.dev) v21 | Framework frontend |
-| TypeScript | Lenguaje principal |
+| [PHP](https://www.php.net/) | Lenguaje backend para servicios API |
+| MySQL / phpMyAdmin | Base de datos relacional transaccional |
+| TypeScript | Lenguaje principal del frontend |
 | CSS | Estilos de la aplicación |
 | GitHub Actions | CI/CD para despliegue automático |
 
 ---
 
-## 📁 Estructura del proyecto
-
-```
-Inventario-ai/
-├── src/
-│   ├── app/
-│   │   ├── components/     # Componentes reutilizables
-│   │   ├── pages/          # Vistas principales
-│   │   ├── services/       # Servicios y lógica de negocio
-│   │   └── models/         # Interfaces y modelos
-│   ├── assets/             # Recursos estáticos
-│   └── styles.css          # Estilos globales
-├── public/                 # Archivos públicos
-├── .github/workflows/      # Pipeline CI/CD
-├── angular.json            # Configuración Angular
-└── package.json            # Dependencias
-```
-
----
-
-## ⚙️ Instalación y uso local
-
-### Prerrequisitos
-
-- Node.js v20 o superior
-- npm v9 o superior
-- Angular CLI v21
-
-### Pasos
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/Ironman2201-max/Inventario-ai.git
-cd Inventario-ai
-
-# 2. Instalar dependencias
-npm install
-
-# 3. Iniciar servidor de desarrollo
-ng serve
-```
-
-Abre el navegador en `http://localhost:4200`
-
----
-
-## 🏗️ Build para producción
-
-```bash
-ng build --configuration=production
-```
-
-Los archivos compilados se generan en `dist/Inventario-ai/browser/`.
-
----
-
-## 🚢 Despliegue
-
-El proyecto utiliza **GitHub Actions** para el despliegue automático en el VPS cada vez que se hace push a la rama `main`.
-
-### Secrets requeridos en GitHub
-
-| Secret | Descripción |
-|---|---|
-| `SERVER_IP` | Dirección IP del servidor |
-| `SERVER_USER` | Usuario SSH del servidor |
-| `SSH_PRIVATE_KEY` | Llave privada SSH |
-
----
-
-## 👥 Equipo de desarrollo
-
-Proyecto desarrollado como parte del **Seminario 1**.
-
----
-
-## 📄 Licencia
-
-Este proyecto es de uso académico.
+## 📁 Estructura del Proyecto
