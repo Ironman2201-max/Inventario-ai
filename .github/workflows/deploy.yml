@@ -17,17 +17,19 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # Actualizado a la versión estable para evitar warnings
+          node-version: '24'
           cache: 'npm'
 
       - name: Instalar dependencias
         run: npm install
 
       - name: Compilar proyecto (Build Production)
-        run: npm run build -- --configuration=production
+        # Forzamos que use rutas relativas con ./ para evitar fallos de MIME type en subcarpetas
+        run: npm run build -- --configuration=production --base-href ./
 
       - name: Comprimir archivos compilados
-        run: tar -czf frontend.tar.gz -C dist/Inventario-ai/browser .
+        # Usamos un comodín dinámico 'dist/*/browser' por si acaso el nombre tiene variaciones de mayúsculas
+        run: tar -czf frontend.tar.gz -C dist/inventario-ai/browser . || tar -czf frontend.tar.gz -C dist/Inventario-ai/browser . || tar -czf frontend.tar.gz -C dist/*/browser .
 
       - name: Subir archivo comprimido al VPS
         uses: appleboy/scp-action@v0.1.7
@@ -37,7 +39,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "frontend.tar.gz"
-          target: "/var/www/seminario1/sgp/"
+          target: "/tmp/" # Lo subimos directamente a /tmp para evitar problemas de mover archivos
 
       - name: Limpiar, descomprimir y dejar listo en VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -48,8 +50,8 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            # 1. Mover el archivo recién subido a la carpeta /tmp del sistema (donde sí hay permisos)
-            mv /var/www/seminario1/sgp/frontend.tar.gz /tmp/frontend.tar.gz
+            # 1. Asegurar que la carpeta de destino exista
+            mkdir -p /var/www/seminario1/sgp/
 
             # 2. Vaciar de forma segura el contenido viejo de tu app de Angular
             rm -rf /var/www/seminario1/sgp/*
@@ -57,5 +59,8 @@ jobs:
             # 3. Descomprimir el archivo directamente en tu carpeta productiva
             tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
 
-            # 4. Limpiar el archivo temporal para no dejar basura en el servidor
+            # 4. Limpiar el archivo temporal
             rm /tmp/frontend.tar.gz
+
+            # 5. Asegurar permisos correctos para Nginx/Apache
+            sudo chmod -R 755 /var/www/seminario1/sgp/
