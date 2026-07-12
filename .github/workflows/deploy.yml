@@ -24,43 +24,32 @@ jobs:
         run: npm install
 
       - name: Compilar proyecto (Build Production)
-        # Forzamos que use rutas relativas con ./ para evitar fallos de MIME type en subcarpetas
         run: npm run build -- --configuration=production --base-href ./
 
       - name: Comprimir archivos compilados
-        # Usamos un comodín dinámico 'dist/*/browser' por si acaso el nombre tiene variaciones de mayúsculas
         run: tar -czf frontend.tar.gz -C dist/inventario-ai/browser . || tar -czf frontend.tar.gz -C dist/Inventario-ai/browser . || tar -czf frontend.tar.gz -C dist/*/browser .
 
-      - name: Subir archivo comprimido al VPS
-        uses: appleboy/scp-action@v0.1.7
+      - name: Configurar llave SSH
+        uses: webfactory/ssh-agent@v0.5.4
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          source: "frontend.tar.gz"
-          target: "/tmp/" # Lo subimos directamente a /tmp para evitar problemas de mover archivos
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Limpiar, descomprimir y dejar listo en VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script_stop: true
-          script: |
-            # 1. Asegurar que la carpeta de destino exista
+      - name: Ejecutar despliegue en el Servidor
+        env:
+          SSH_HOST: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -Eeuo pipefail
+
+          # 1. Subir el archivo comprimido usando SCP nativo
+          scp -o StrictHostKeyChecking=no frontend.tar.gz $SSH_USER@$SSH_HOST:/tmp/frontend.tar.gz
+
+          # 2. Conectarse por SSH y procesar los archivos en el destino
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "bash -s" << 'EOF'
+            set -Eeuo pipefail
+            
             mkdir -p /var/www/seminario1/sgp/
-
-            # 2. Vaciar de forma segura el contenido viejo de tu app de Angular
             rm -rf /var/www/seminario1/sgp/*
-
-            # 3. Descomprimir el archivo directamente en tu carpeta productiva
             tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
-
-            # 4. Limpiar el archivo temporal
             rm /tmp/frontend.tar.gz
-
-            # 5. Asegurar permisos correctos para Nginx/Apache
-            sudo chmod -R 755 /var/www/seminario1/sgp/
+          EOF
