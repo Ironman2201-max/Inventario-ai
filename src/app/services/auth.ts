@@ -22,7 +22,7 @@ interface LoginResponse {
 })
 export class AuthService {
   // URL de tu backend en XAMPP
-  private apiUrl = 'http://localhost/angular-backend';
+  private apiUrl = 'https://162-35-169-164.sslip.io/api';
 
   // WritableSignal para almacenar el estado del usuario (null si no está logueado)
   private currentUserSignal = signal<Usuario | null>(null);
