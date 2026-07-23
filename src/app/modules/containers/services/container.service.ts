@@ -41,7 +41,7 @@ export class ContainerService {
   obtenerContenedores(): Observable<Container[]> {
     return this.http.get<Container[]>(`${this.apiUrl}/contenedores.php`);
   }
-  obtenerMovimientos(): Observable<Movement[]> {
+  obtenerHistorialMovimientos(): Observable<Movement[]> {
     return this.http.get<Movement[]>(`${this.apiUrl}/movimientos.php`);
   }
 

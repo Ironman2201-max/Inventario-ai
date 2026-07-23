@@ -36,10 +36,7 @@ export const routes: Routes = [
   },
  { path: 'contenedores/registro', component: ContainerRegister },
  { path: 'contenedores/salida', component: ContainerExit },
-   
- 
-
-    { path: 'contenedores/inventario', component: ContainerList },
+ { path: 'contenedores/historial', component: ContainerList },
   // Redirección por defecto si la ruta no existe
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
