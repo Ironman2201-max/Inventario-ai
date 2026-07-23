@@ -23,8 +23,9 @@ interface LoginResponse {
 })
 export class AuthService {
   // URL de tu backend en XAMPP
-  private apiUrl = 'http://localhost/angular-backend';
-
+ // private apiUrl = 'http://localhost/angular-backend';
+// 🔒 Ahora tu backend es 100% seguro (HTTPS) y no será bloqueado por el sitio del profesor
+    private apiUrl = 'https://162-35-169-164.sslip.io/api';
 
   // WritableSignal para almacenar el estado del usuario (null si no está logueado)
   private currentUserSignal = signal<Usuario | null>(null);
