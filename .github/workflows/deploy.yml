@@ -48,8 +48,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "bash -s" << 'EOF'
             set -Eeuo pipefail
             
+            # Asegurar que exista la carpeta raíz de tu división
             mkdir -p /var/www/seminario1/sgp/
-            rm -rf /var/www/seminario1/sgp/*
+            
+            # Borrar todo lo viejo de Angular pero PROTEGER la carpeta 'api'
+            find /var/www/seminario1/sgp/ -mindepth 1 -maxdepth 1 ! -name 'api' -exec rm -rf {} +
+            
+            # Descomprimir los nuevos archivos del frontend
             tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
+            
+            # Limpiar el archivo temporal
             rm /tmp/frontend.tar.gz
           EOF
