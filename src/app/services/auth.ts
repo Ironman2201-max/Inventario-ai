@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 export interface Usuario {
   id: number;
   nombre: string;
+  cedula: string;
   correo: string;
   rol: 'admin' | 'user';
 }
@@ -22,7 +23,8 @@ interface LoginResponse {
 })
 export class AuthService {
   // URL de tu backend en XAMPP
-  private apiUrl = 'https://162-35-169-164.sslip.io/api';
+  private apiUrl = 'http://localhost/angular-backend';
+
 
   // WritableSignal para almacenar el estado del usuario (null si no está logueado)
   private currentUserSignal = signal<Usuario | null>(null);

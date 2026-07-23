@@ -50,68 +50,69 @@ export class ContainerRegister implements OnInit {
     }
   }
 
-  protected registrarEntrada(): void {
-    if (this.containerForm.invalid || !this.gpsCargado()) {
-      this.containerForm.markAllAsTouched();
-      return;
-    }
-
-    const datosContenedor = this.containerForm.value;
-
-    if (!datosContenedor.customs_status) {
-      this.error.set('❌ INGRESO BLOQUEADO: El contenedor no cuenta con Autorización Aduanera aprobada.');
-      return;
-    }
-
-    this.error.set('');
-    
-    // 🔥 1. ACTIVAMOS EL MODAL EN ESTADO DE CARGA
-    this.estadoModal.set('cargando');
-    this.mostrarModal.set(true);
-
-    this.containerService.registrarContenedor(datosContenedor as any).subscribe({
-      next: (res) => {
-        const idNuevoContenedor = res && res.container_id ? Number(res.container_id) : null;
-        const idUsuarioActual = this.authService.currentUser()?.id ? Number(this.authService.currentUser()?.id) : 1;
-
-        if (!idNuevoContenedor) {
-          this.mostrarModal.set(false);
-          this.error.set('El servidor no retornó el ID del inventario.');
-          return;
-        }
-
-        const nuevoMovimiento = {
-          container_id: idNuevoContenedor,
-          user_id: idUsuarioActual,
-          movement_type: 'ENTRY' as const,
-          latitude: this.coords.latitude,
-          longitude: this.coords.longitude
-        };
-
-        // Enviamos la traza GPS
-        this.containerService.registrarMovimiento(nuevoMovimiento).subscribe({
-          next: () => {
-            // 🎉 2. CAMBIAMOS EL MODAL A ESTADO DE ÉXITO COMPLETADO
-            this.estadoModal.set('exito');
-            
-            // Limpiamos el formulario de patio
-            this.containerForm.reset({ type: 'Dry Van', customs_status: false, status: 'Operativo' });
-            
-            // ⏳ 3. EL MODAL SE CIERRA SOLO DESPUÉS DE 2.5 SEGUNDOS PARA REFRESCAR LA VISTA
-            setTimeout(() => {
-              this.mostrarModal.set(false);
-            }, 2500);
-          },
-          error: () => {
-            this.mostrarModal.set(false);
-            this.error.set('Contenedor creado, pero falló la traza de movimiento GPS.');
-          }
-        });
-      },
-      error: (err) => {
-        this.mostrarModal.set(false);
-        this.error.set(err.error?.message || 'Error en la conexión con XAMPP.');
-      }
-    });
+ protected registrarEntrada(): void {
+  if (this.containerForm.invalid || !this.gpsCargado()) {
+    this.containerForm.markAllAsTouched();
+    return;
   }
+
+  const datosContenedor = this.containerForm.value;
+
+  if (!datosContenedor.customs_status) {
+    this.error.set('❌ INGRESO BLOQUEADO: El contenedor no cuenta con Autorización Aduanera aprobada.');
+    return;
+  }
+
+  this.error.set('');
+  
+  this.estadoModal.set('cargando');
+  this.mostrarModal.set(true);
+
+  this.containerService.registrarContenedor(datosContenedor as any).subscribe({
+    next: (res) => {
+      const idNuevoContenedor = res && res.container_id ? Number(res.container_id) : null;
+      
+      // 👤 Obtenemos los datos del usuario actual autenticado
+      const usuarioActual = this.authService.currentUser();
+      const idUsuarioActual = usuarioActual?.id ? Number(usuarioActual.id) : 1;
+      const cedulaUsuarioActual = usuarioActual?.cedula || ''; // 👈 Captura de la cédula
+
+      if (!idNuevoContenedor) {
+        this.mostrarModal.set(false);
+        this.error.set('El servidor no retornó el ID del inventario.');
+        return;
+      }
+
+      const nuevoMovimiento = {
+        container_id: idNuevoContenedor,
+        user_id: idUsuarioActual,
+        cedula_operador: cedulaUsuarioActual, // 👈 Se envía la cédula del operador
+        movement_type: 'ENTRY' as const,
+        latitude: this.coords.latitude,
+        longitude: this.coords.longitude
+      };
+
+      // Enviamos la traza GPS con la identificación del usuario
+      this.containerService.registrarMovimiento(nuevoMovimiento).subscribe({
+        next: () => {
+          this.estadoModal.set('exito');
+          this.containerForm.reset({ type: 'Dry Van', customs_status: false, status: 'Operativo' });
+          
+          setTimeout(() => {
+            this.mostrarModal.set(false);
+          }, 2500);
+        },
+        error: () => {
+          this.mostrarModal.set(false);
+          this.error.set('Contenedor creado, pero falló la traza de movimiento GPS.');
+        }
+      });
+    },
+    error: (err) => {
+      this.mostrarModal.set(false);
+      this.error.set(err.error?.message || 'Error en la conexión con el servidor.');
+    }
+  });
+}
+
 }

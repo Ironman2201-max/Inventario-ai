@@ -1,6 +1,6 @@
-
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { Container } from '../models/container.models';   
 import { ContainerService } from '../services/container.service';
 import { AuthService } from '../../../services/auth';
@@ -8,7 +8,7 @@ import { AuthService } from '../../../services/auth';
 @Component({
   selector: 'app-container-exit',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, DatePipe],
   templateUrl: './container-exit.html',
   styleUrl: './container-exit.css'
 })
@@ -38,12 +38,14 @@ export class ContainerExit implements OnInit {
     observations: ['']
   });
 
-  // Cálculo en tiempo real del tiempo de permanencia usando signals computed
+  // ⏱️ Cálculo reactivo del tiempo de permanencia corregido
   protected readonly estadiaCalculada = computed(() => {
     const seleccionado = this.contenedorSeleccionado();
     if (!seleccionado || !seleccionado.entry_date) return null;
 
-    const fechaIngreso = new Date(seleccionado.entry_date);
+    // 🛠️ Reemplazar espacio por 'T' para que 'new Date()' sea compatible universalmente
+    const fechaISO = seleccionado.entry_date.replace(' ', 'T');
+    const fechaIngreso = new Date(fechaISO);
     const fechaSalida = new Date(); // Fecha actual del sistema
 
     return this.calcularDiferenciaTiempo(fechaIngreso, fechaSalida);
@@ -53,7 +55,7 @@ export class ContainerExit implements OnInit {
     this.capturarGPS();
     this.cargarContenedoresEnPatio();
 
-    // Escuchar cambios en la selección para actualizar el cálculo visual de forma reactiva
+    // Escuchar cambios en la selección para actualizar el detalle de forma reactiva
     this.exitForm.get('container_id')?.valueChanges.subscribe(id => {
       const encontrado = this.listaContenedores().find(c => c.id === Number(id)) || null;
       this.contenedorSeleccionado.set(encontrado);
@@ -74,15 +76,19 @@ export class ContainerExit implements OnInit {
   private cargarContenedoresEnPatio(): void {
     this.containerService.obtenerContenedores().subscribe({
       next: (data) => {
-        this.listaContenedores.set(data);
+        // 🔒 Filtramos para mostrar SOLO los contenedores que siguen en patio (sin fecha de salida)
+        const activosEnPatio = data.filter(c => !c.exit_date);
+        this.listaContenedores.set(activosEnPatio);
       },
-      error: () => this.error.set('Error al cargar las unidades del patio.')
+      error: () => this.error.set('Error al cargar las unidades del patio desde XAMPP.')
     });
   }
 
   private calcularDiferenciaTiempo(inicio: Date, fin: Date) {
+    if (isNaN(inicio.getTime())) return { texto: '0m', horasTotales: 0 };
+
     const diffMs = fin.getTime() - inicio.getTime();
-    if (diffMs < 0) return { texto: '0 minutos', horasTotales: 0 };
+    if (diffMs < 0) return { texto: '0m', horasTotales: 0 };
 
     const totalMinutos = Math.floor(diffMs / (1000 * 60));
     const dias = Math.floor(totalMinutos / (24 * 60));
@@ -108,7 +114,10 @@ export class ContainerExit implements OnInit {
 
     const formValues = this.exitForm.value;
     const idContenedor = Number(formValues.container_id);
-    const idUsuarioActual = this.authService.currentUser()?.id ? Number(this.authService.currentUser()?.id) : 2; // Operario o Admin por defecto
+    
+    // 👤 Obtenemos los datos del usuario actual autenticado (incluida la Cédula)
+    const usuarioActual = this.authService.currentUser();
+    const idUsuarioActual = usuarioActual?.id ? Number(usuarioActual.id) : 2;
     const permanencia = this.estadiaCalculada();
 
     this.error.set('');
@@ -132,7 +141,7 @@ export class ContainerExit implements OnInit {
         this.exitForm.reset();
         this.contenedorSeleccionado.set(null);
         
-        // Recargar el inventario de contenedores que quedan en el patio
+        // Recargar el inventario filtrado (la unidad despachada ya no aparecerá)
         this.cargarContenedoresEnPatio();
 
         setTimeout(() => {

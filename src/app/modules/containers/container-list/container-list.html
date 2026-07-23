@@ -32,6 +32,7 @@
               <th>Ubicación / Slot</th>
               <th>Control Aduana</th>
               <th>Condición</th>
+              <th>Registrado por</th> <!-- 👤 NUEVA COLUMNA -->
               <th>Fecha Ingreso</th>
             </tr>
           </thead>
@@ -58,6 +59,15 @@
                   <span class="badge-status" [attr.data-status]="item.status">
                     {{ item.status }}
                   </span>
+                </td>
+                <!-- 👤 DATOS DEL OPERADOR Y CÉDULA -->
+                <td>
+                  <div class="operator-info">
+                    <span class="operator-name">🧑‍✈️ {{ item.operador_nombre || 'Sistema / Sin registro' }}</span>
+                    @if (item.operador_cedula) {
+                      <small class="operator-cedula">C.C. {{ item.operador_cedula }}</small>
+                    }
+                  </div>
                 </td>
                 <td class="date-txt">{{ item.entry_date | date:'dd/MM/yyyy hh:mm a' }}</td>
               </tr>

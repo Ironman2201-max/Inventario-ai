@@ -17,6 +17,17 @@
           <small class="error-text">El nombre debe tener mínimo 3 letras.</small>
         }
       </div>
+       
+       <div class="form-group">
+        <label>Cédula (10 dígitos) </label>
+        <input type="text" formControlName="cedula" maxlength="10" placeholder="Ej: 1085123456">
+        @if (registroForm.get('cedula ')?.touched && registroForm.get('cedula ')?.invalid) {
+          <small class="text-danger d-block">
+      La cédula es obligatoria y debe contener exactamente 10 números.
+    </small>
+        }
+
+      </div>
 
       <div class="form-group">
         <label>Correo Electrónico</label>
@@ -36,6 +47,7 @@
 
       <button type="submit" [disabled]="registroForm.invalid" class="btn-primary">Registrarse</button>
     </form>
+
 
     <p class="auth-switch">
       ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>

@@ -8,6 +8,9 @@ export interface Container {
   slot: string;
   entry_date?: string;
   exit_date?: string;
+  // 👤 Datos del operador que lo registró
+  operador_nombre?: string;
+  operador_cedula?: string;
 }
 
 export interface Movement {
@@ -19,4 +22,7 @@ export interface Movement {
   longitude: number;
   observation?: string; // 👈 Agrégala aquí si la vas a usar
   created_at?: string;
+  // 👤 Datos opcionales traídos desde la BD para mostrar en tablas/historial
+  operador_nombre?: string;
+  operador_cedula?: string;
 }
