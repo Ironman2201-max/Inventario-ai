@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import { Component, inject, signal, ElementRef, HostListener } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+=======
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -10,6 +15,7 @@ import { AuthService } from '../../services/auth';
 })
 export class Menu {
   private readonly authService = inject(AuthService);
+<<<<<<< HEAD
   private readonly router = inject(Router);
   private readonly elementRef = inject(ElementRef);
 
@@ -38,4 +44,13 @@ export class Menu {
       this.menuPatioAbierto.set(false);
     }
   }
+=======
+  
+  // Exponemos el Signal del usuario para usarlo en el HTML
+  protected readonly usuario = this.authService.currentUser;
+
+  protected logout(): void {
+    this.authService.logout();
+  }
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
 }

@@ -9,6 +9,7 @@
     </div>
 
     <ul class="nav-links">
+<<<<<<< HEAD
 
       <li>
         @if (usuario()?.rol === 'admin') {
@@ -21,14 +22,25 @@
             <span>🏠</span>
             <span>Mi Perfil</span>
           </a>
+=======
+      <li>
+        @if (usuario()?.rol === 'admin') {
+          <a routerLink="/admin-dashboard" routerLinkActive="active">🏠 Inicio Admin</a>
+        } @else {
+          <a routerLink="/user-dashboard" routerLinkActive="active">🏠 Mi Perfil</a>
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
         }
       </li>
       
       <li>
+<<<<<<< HEAD
         <a routerLink="/compras" routerLinkActive="active">
           <span>🛒</span>
           <span>Mis Compras</span>
         </a>
+=======
+        <a routerLink="/compras" routerLinkActive="active">🛒 Mis Compras</a>
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
       </li>
 
       @if (usuario()?.rol === 'admin') {
@@ -36,6 +48,7 @@
         <li>
           <a routerLink="/gestion-usuarios" routerLinkActive="active">👥 Gestión de Usuarios</a>
         </li>
+<<<<<<< HEAD
 
            <!-- Agrega menu secundario para operaciones de patio -->
       <li class="dropdown-wrapper">
@@ -73,15 +86,28 @@
           <a routerLink="/facturacion" routerLinkActive="active-menu">🧾 Facturación Electrónica</a>
         </li>
         
+=======
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
         <li>
           <a routerLink="/reportes" routerLinkActive="active">📊 Reportes del Sistema</a>
         </li>
         <li>
           <a routerLink="/configuracion" routerLinkActive="active">⚙️ Ajustes Globales</a>
         </li>
+<<<<<<< HEAD
       
 
         
+=======
+
+        <li>
+          <a routerLink="/contenedores/registro" routerLinkActive="active">🚛 Registro de Entrada</a>
+        </li>
+        
+        <li>
+          <a routerLink="/contenedores/inventario" routerLinkActive="active">📦 Inventario de Patio</a>
+        </li>
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
       }
     </ul>
 

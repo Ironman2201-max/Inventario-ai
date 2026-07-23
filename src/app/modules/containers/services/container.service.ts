@@ -40,8 +40,11 @@ export class ContainerService {
     return this.http.get<Container[]>(`${this.apiUrl}/contenedores.php`);
   }
 
+<<<<<<< HEAD
   obtenerHistorialMovimientos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/movimientos.php`);
   }
 
+=======
+>>>>>>> d041a0d029502f074eb7e199e42f0afe106b454b
 }
