@@ -1,0 +1,54 @@
+<div class="management-container">
+  <header class="page-header">
+    <h2>🛡️ Control y Asignación de Roles</h2>
+    <p>Administra los privilegios de acceso de los usuarios registrados en el sistema.</p>
+  </header>
+
+  @if (mensajeExito()) {
+    <div class="alert alert-success">{{ mensajeExito() }}</div>
+  }
+
+  <div class="table-responsive">
+    <table class="roles-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre Completo</th>
+          <th>Correo Electrónico</th>
+          <th>Rol Asignado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of listaUsuarios(); track user.id) {
+          <tr>
+            <td><strong>#{{ user.id }}</strong></td>
+            <td>{{ user.nombre }}</td>
+            <td>{{ user.correo }}</td>
+            <td>
+              <span class="role-badge" [class.admin]="user.rol === 'admin'" [class.user]="user.rol === 'user'">
+                {{ user.rol }}
+              </span>
+            </td>
+            <td>
+              <div class="action-cell">
+                <select [ngModel]="getRolPendiente(user.id) ?? user.rol" (ngModelChange)="marcarCambio(user.id, $event)"
+                  class="select-role">
+                  <option value="user">User (Usuario Común)</option>
+                  <option value="admin">Admin (Administrador)</option>
+                </select>
+            
+                @if (tieneCambioPendiente(user.id)) {
+                <button class="btn-save" (click)="guardarRol(user.id)" [disabled]="guardando()">
+                  <i class="ti ti-device-floppy"></i>
+                  Guardar
+                </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,165 @@
+<div class="operation-container">
+  <header class="page-header">
+    <h2>🚚 Recepción y Registro de Contenedores</h2>
+    <p>Ingreso físico de unidades al inventario del patio logístico.</p>
+  </header>
+@if (error()) {
+    <div class="alert alert-danger">
+      <span class="icon">❌</span> {{ error() }}
+    </div>
+  }
+
+  <div class="panel-layout">
+    ```
+
+  <div class="panel-layout">
+    <form [formGroup]="containerForm" (ngSubmit)="registrarEntrada()" class="operation-form">
+      <div class="form-grid">
+        
+        <div class="form-group">
+          <label for="code">Código del Contenedor  (Prefijo ISO)</label>
+          <input 
+            id="code"
+            type="text" 
+            formControlName="code" 
+            placeholder="Ej: SUDU1234567" 
+            class="form-control text-uppercase"
+          >
+          @if (containerForm.get('code')?.touched && containerForm.get('code')?.invalid) {
+            <small class="error-text">Requerido. Formato oficial: 4 letras y 7 números.</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="type">Tipo de Contenedor</label>
+          <select id="type" formControlName="type" class="form-control">
+            <option value="Dry Van">Dry Van (Carga Seca)</option>
+            <option value="Reefer">Reefer (Refrigerado)</option>
+            <option value="High Cube">High Cube (Mayor Altura)</option>
+            <option value="Vacío">Vacío</option>
+            <option value="Tránsito">Tránsito</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="warehouse">Patio / Bodega de Almacenamiento</label>
+          <input 
+            id="warehouse"
+            type="text" 
+            formControlName="warehouse" 
+            placeholder="Ej: Patio Alfa" 
+            class="form-control"
+          >
+          @if (containerForm.get('warehouse')?.touched && containerForm.get('warehouse')?.invalid) {
+            <small class="error-text">Debe asignar un patio de destino.</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="slot">Slot / Posición Exacta</label>
+          <input 
+            id="slot"
+            type="text" 
+            formControlName="slot" 
+            placeholder="Ej: Fila 3 - A2" 
+            class="form-control"
+          >
+          @if (containerForm.get('slot')?.touched && containerForm.get('slot')?.invalid) {
+            <small class="error-text">La ubicación del slot es obligatoria.</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="status">Estado Operativo Inicial</label>
+          <select id="status" formControlName="status" class="form-control">
+            <option value="Operativo">Operativo (Listo para asignación)</option>
+            <option value="Mantenimiento">Mantenimiento (Revisión técnica)</option>
+            <option value="Dañado">Dañado / Estructural</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width checkbox-card" [class.approved]="containerForm.get('customs_status')?.value">
+          <div class="checkbox-wrapper">
+            <input 
+              id="customs_status"
+              type="checkbox" 
+              formControlName="customs_status" 
+              class="checkbox-input"
+            >
+            <div class="checkbox-label-group">
+              <label for="customs_status" class="checkbox-title">Autorización Legal de Aduana (RF03)</label>
+              <p class="checkbox-desc">Marcar únicamente si el contenedor cuenta con el levante aduanero aprobado.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+     <div class="gps-status-bar" [class.connected]="gpsCargado()">
+        <div class="gps-indicator-group">
+          <div class="gps-indicator"></div>
+          @if (gpsCargado()) {
+            <p><strong>📍 SISTEMA DE GEOLOCALIZACIÓN ACTIVO</strong></p>
+          } @else {
+            <p><strong>⏳ BUSCANDO COORDINADAS SATELITALES...</strong></p>
+          }
+        </div>
+
+        @if (gpsCargado()) {
+          <div class="telemetry-grid">
+            <div class="telemetry-item">
+              <span class="label">Punto de Control:</span>
+              <span class="value">{{ nodoTerminal() }}</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="label">Latitud:</span>
+              <span class="value code-style">{{ latitudVisual() }}</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="label">Longitud:</span>
+              <span class="value code-style">{{ longitudVisual() }}</span>
+            </div>
+          </div>
+        } @else {
+          <p class="gps-warning-text">Se requieren los privilegios de ubicación del dispositivo para validar las operaciones terrestres en la zona portuaria.</p>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          [disabled]="containerForm.invalid || !gpsCargado()" 
+          class="btn-submit"
+        >
+          Validar e Ingresar a Patio
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@if (mostrarModal()) {
+  <div class="modal-overlay">
+    <div class="modal-card">
+      
+      @if (estadoModal() === 'cargando') {
+        <div class="spinner-container">
+          <div class="custom-spinner"></div>
+        </div>
+        <h3>Procesando Operación</h3>
+        <p>Estableciendo conexión con MySQL y subiendo coordenadas satelitales...</p>
+      }
+
+      @if (estadoModal() === 'exito') {
+        <div class="success-icon-wrapper">
+          <div class="success-checkmark">
+            <div class="check-icon"></div>
+          </div>
+        </div>
+        <h3 class="success-title">¡Registro Exitoso!</h3>
+        <p>El contenedor y su traza GPS han sido almacenados correctamente en los patios.</p>
+      }
+
+    </div>
+  </div>
+}

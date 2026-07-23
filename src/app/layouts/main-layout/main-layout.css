@@ -1,0 +1,11 @@
+.app-layout {
+  display: flex;
+}
+.main-content {
+  flex-grow: 1;
+  margin-left: 260px; /* Ancho exacto de la barra lateral */
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  box-sizing: border-box;
+}

@@ -1,0 +1,70 @@
+<div class="inventory-container">
+  <header class="page-header">
+    <div class="header-info">
+      <h2>📋 Control de Inventario en Patio</h2>
+      <p>Monitoreo en tiempo real de unidades físicas y su estado aduanero.</p>
+    </div>
+    <button class="btn-refresh" (click)="cargarInventario()">🔄 Actualizar Patio</button>
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-danger">❌ {{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Consultando Base de Datos de Patio...</p>
+    </div>
+  } @else {
+    @if (contenedores().length === 0) {
+      <div class="empty-state">
+        <p>🚫 No hay contenedores registrados en los patios actualmente.</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Código ISO</th>
+              <th>Tipo</th>
+              <th>Ubicación / Slot</th>
+              <th>Control Aduana</th>
+              <th>Condición</th>
+              <th>Fecha Ingreso</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of contenedores(); track item.id) {
+              <tr>
+                <td><strong>#{{ item.id }}</strong></td>
+                <td class="code-column">{{ item.code }}</td>
+                <td><span class="badge type-badge">{{ item.type }}</span></td>
+                <td>
+                  <div class="location-cell">
+                    <span class="warehouse-txt">{{ item.warehouse }}</span>
+                    <span class="slot-txt">📍 {{ item.slot }}</span>
+                  </div>
+                </td>
+                <td>
+                  @if (item.customs_status) {
+                    <span class="status-pill approved">✅ Liberado</span>
+                  } @else {
+                    <span class="status-pill locked">🛑 Retenido</span>
+                  }
+                </td>
+                <td>
+                  <span class="badge-status" [attr.data-status]="item.status">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="date-txt">{{ item.entry_date | date:'dd/MM/yyyy hh:mm a' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

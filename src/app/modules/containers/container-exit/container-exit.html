@@ -1,0 +1,116 @@
+<p>container-exit works!</p>
+<div class="exit-container">
+  <header class="page-header">
+    <div class="header-info">
+      <h2>📤 Registro de Salida (Despacho de Patio)</h2>
+      <p>Localización satelital y cálculo de estadía en el terminal de {{ nodoTerminal() }}</p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-danger">❌ {{ error() }}</div>
+  }
+
+  <div class="exit-grid">
+    <!-- Formulario de Despacho -->
+    <div class="card form-card">
+      <form [formGroup]="exitForm" (ngSubmit)="registrarSalida()">
+        
+        <div class="form-group">
+          <label for="container_id">Seleccionar Contenedor (Patio)</label>
+          <select id="container_id" formControlName="container_id" class="form-control">
+            <option value="">-- Seleccione una unidad en patio --</option>
+            @for (item of listaContenedores(); track item.id) {
+              <option [value]="item.id">{{ item.code }} ({{ item.type }} - Slot: {{ item.slot }})</option>
+            }
+          </select>
+          @if (exitForm.get('container_id')?.touched && exitForm.get('container_id')?.invalid) {
+            <span class="validation-error">Debe seleccionar una unidad para despachar.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="observations">Observaciones de Entrega / Precinto</label>
+          <textarea 
+            id="observations" 
+            formControlName="observations" 
+            rows="3" 
+            class="form-control" 
+            placeholder="Ej: Precinto de seguridad No. 124566, transportadora externa.">
+          </textarea>
+        </div>
+
+        <!-- Metadata de Geolocalización -->
+        <div class="gps-box" [class.connected]="gpsCargado()">
+          <div class="gps-status-header">
+            <span class="dot"></span>
+            <strong>Verificación Satelital de Salida</strong>
+          </div>
+          @if (gpsCargado()) {
+            <p class="gps-data">Coordenadas: <code>{{ latitudVisual() }}, {{ longitudVisual() }}</code></p>
+          } @else {
+            <p class="gps-data loading-txt">Buscando enlace de antena GPS...</p>
+          }
+        </div>
+
+        <button type="submit" class="btn-dispatch" [disabled]="!gpsCargado() || exitForm.invalid">
+          📦 Confirmar Despacho y Salida
+        </button>
+      </form>
+    </div>
+
+    <!-- Panel de Detalles y Estadía (Reactivo) -->
+    <div class="card detail-card">
+      <h3>📋 Detalles de la Unidad</h3>
+      
+      @if (contenedorSeleccionado(); as cont) {
+        <div class="detail-info">
+          <div class="detail-row">
+            <span>Código ISO:</span>
+            <strong>{{ cont.code }}</strong>
+          </div>
+          <div class="detail-row">
+            <span>Ubicación de Origen:</span>
+            <span>{{ cont.warehouse }} - <strong>📍 Slot {{ cont.slot }}</strong></span>
+          </div>
+          <div class="detail-row">
+            <span>Fecha de Ingreso:</span>
+            <span>{{ cont.entry_date }}</span>
+          </div>
+
+          <!-- Bloque de Cálculo de Tiempo -->
+          <div class="time-metric-box">
+            <h4>⏱️ Tiempo de Permanencia en Patio</h4>
+            @if (estadiaCalculada(); as estadia) {
+              <div class="time-counter">
+                <span class="time-value">{{ estadia.texto }}</span>
+                <span class="time-subtext">Equivale a aprox. <strong>{{ estadia.horasTotales }} horas</strong> facturables</span>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="empty-detail-state">
+          <p>Seleccione un contenedor para calcular el tiempo de estadía y verificar sus condiciones antes de habilitar la compuerta.</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE PROCESAMIENTO -->
+@if (mostrarModal()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      @if (estadoModal() === 'cargando') {
+        <div class="spinner"></div>
+        <h3>Registrando Despacho...</h3>
+        <p>Procesando liberación de slot y actualizando bitácora de movimientos.</p>
+      } @else {
+        <div class="success-icon">✅</div>
+        <h3>¡Salida Autorizada!</h3>
+        <p>El contenedor ha sido retirado del inventario activo de patio de forma exitosa.</p>
+      }
+    </div>
+  </div>
+}

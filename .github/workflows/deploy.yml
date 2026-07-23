@@ -1,0 +1,62 @@
+name: Deploy Angular al VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Compilar proyecto (Build Production)
+        run: npm run build -- --configuration=production --base-href ./
+
+      - name: Comprimir archivos compilados
+        run: tar -czf frontend.tar.gz -C dist/inventario-ai/browser . || tar -czf frontend.tar.gz -C dist/Inventario-ai/browser . || tar -czf frontend.tar.gz -C dist/*/browser .
+
+      - name: Configurar llave SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Ejecutar despliegue en el Servidor
+        env:
+          SSH_HOST: ${{ secrets.SERVER_IP }}
+          SSH_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -Eeuo pipefail
+
+          # 1. Subir el archivo comprimido usando SCP nativo
+          scp -o StrictHostKeyChecking=no frontend.tar.gz $SSH_USER@$SSH_HOST:/tmp/frontend.tar.gz
+
+          # 2. Conectarse por SSH y procesar los archivos en el destino
+          ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "bash -s" << 'EOF'
+            set -Eeuo pipefail
+            
+            # Asegurar que exista la carpeta raíz de tu división
+            mkdir -p /var/www/seminario1/sgp/
+            
+            # Borrar todo lo viejo de Angular pero PROTEGER la carpeta 'api'
+            find /var/www/seminario1/sgp/ -mindepth 1 -maxdepth 1 ! -name 'api' -exec rm -rf {} +
+            
+            # Descomprimir los nuevos archivos del frontend
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/seminario1/sgp/
+            
+            # Limpiar el archivo temporal
+            rm /tmp/frontend.tar.gz
+          EOF
