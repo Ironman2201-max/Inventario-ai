@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Container, Movement } from '../models/container.models';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,6 +40,9 @@ export class ContainerService {
 
   obtenerContenedores(): Observable<Container[]> {
     return this.http.get<Container[]>(`${this.apiUrl}/contenedores.php`);
+  }
+  obtenerMovimientos(): Observable<Movement[]> {
+    return this.http.get<Movement[]>(`${this.apiUrl}/movimientos.php`);
   }
 
 
