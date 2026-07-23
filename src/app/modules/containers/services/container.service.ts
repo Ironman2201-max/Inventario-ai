@@ -6,6 +6,7 @@ import { Container, Movement } from '../models/container.models';
 @Injectable({
   providedIn: 'root'
 })
+
 export class ContainerService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost/angular-backend';
