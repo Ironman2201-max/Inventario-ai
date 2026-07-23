@@ -8,7 +8,8 @@ import { FacturaRequest, FacturaResponse } from '../models/invoice.models';
 })
 export class InvoiceService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost/angular-backend/facturas.php';
+  // 🔒 URL actualizada a tu nuevo VPS con HTTPS y pasando por el proxy Nginx
+  private readonly apiUrl = 'https://162-35-169-164.sslip.io/api/facturas.php';
 
   // Enviar datos para validar y timbrar ante la DIAN mediante Factus
   emitirFactura(datos: FacturaRequest): Observable<FacturaResponse> {
