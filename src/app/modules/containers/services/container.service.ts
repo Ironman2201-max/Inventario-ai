@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Container, Movement } from '../models/container.models';
+import { environment } from '../../../environments/environments';
 
 
 @Injectable({
@@ -11,7 +12,8 @@ import { Container, Movement } from '../models/container.models';
 export class ContainerService {
   private readonly http = inject(HttpClient);
  // private readonly apiUrl = 'https://162-35-169-164.sslip.io/api';
-  private apiUrl = 'http://localhost/angular-backend';
+  private apiUrl = `${environment.apiUrl}`;
+  
 
   // Captura de GPS Nativo mediante Promesa
   obtenerUbicacionGPS(): Promise<{ latitude: number; longitude: number }> {

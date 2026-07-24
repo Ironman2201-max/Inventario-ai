@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FacturaRequest, FacturaResponse } from '../models/invoice.models';
+import { environment } from '../../../environments/environments';// Asegúrate de que la ruta sea correcta
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class InvoiceService {
   // 🔒 URL actualizada a tu nuevo VPS con HTTPS y pasando por el proxy Nginx
   
   //private readonly apiUrl = 'https://162-35-169-164.sslip.io/api/facturas.php';
-  private readonly apiUrl = 'http://localhost/angular-backend/facturas.php';
+  private readonly apiUrl = `${environment.apiUrl}/facturas.php`;
 
   // Enviar datos para validar y timbrar ante la DIAN mediante Factus
   emitirFactura(datos: FacturaRequest): Observable<FacturaResponse> {

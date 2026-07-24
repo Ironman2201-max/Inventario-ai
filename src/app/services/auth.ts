@@ -2,6 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { environment } from '../environments/environments'; // Asegúrate de que la ruta sea correcta
 
 
 // Definimos la estructura de la respuesta del usuario
@@ -25,7 +26,7 @@ export class AuthService {
   // URL de tu backend en XAMPP
  // private apiUrl = 'http://localhost/angular-backend';
 // 🔒 Ahora tu backend es 100% seguro (HTTPS) y no será bloqueado por el sitio del profesor
-    private apiUrl = 'https://162-35-169-164.sslip.io/api';
+    private apiUrl = `${environment.apiUrl}`;
 
   // WritableSignal para almacenar el estado del usuario (null si no está logueado)
   private currentUserSignal = signal<Usuario | null>(null);
