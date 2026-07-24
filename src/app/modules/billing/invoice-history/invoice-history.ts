@@ -6,7 +6,7 @@ import { InvoiceService } from '../services/invoice.service';
 @Component({
   selector: 'app-invoice-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, DecimalPipe],
+  imports: [CommonModule, FormsModule, DecimalPipe],
   templateUrl: './invoice-history.html',
   styleUrls: ['./invoice-history.css']
 })
