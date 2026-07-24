@@ -10,8 +10,8 @@ import { Container, Movement } from '../models/container.models';
 
 export class ContainerService {
   private readonly http = inject(HttpClient);
- // private readonly apiUrl = 'https://162-35-169-164.sslip.io/api';
-  private apiUrl = 'http://localhost/angular-backend';
+  private readonly apiUrl = 'https://162-35-169-164.sslip.io/api';
+  //private apiUrl = 'http://localhost/angular-backend';
 
   // Captura de GPS Nativo mediante Promesa
   obtenerUbicacionGPS(): Promise<{ latitude: number; longitude: number }> {
