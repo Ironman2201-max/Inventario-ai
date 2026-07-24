@@ -1,4 +1,3 @@
-<p>container-exit works!</p>
 <div class="exit-container">
   <header class="page-header">
     <div class="header-info">
@@ -16,11 +15,25 @@
     <div class="card form-card">
       <form [formGroup]="exitForm" (ngSubmit)="registrarSalida()">
         
+        <!-- Campo Buscador Integrado -->
+        <div class="form-group mb-2">
+          <label for="container_search">Filtrar por Código ISO, Tipo o Slot</label>
+          <input 
+            type="text" 
+            id="container_search"
+            [ngModel]="busqueda()" 
+            (ngModelChange)="busqueda.set($event)"
+            [ngModelOptions]="{standalone: true}"
+            class="form-control" 
+            placeholder="🔍 Escriba para filtrar (ej: MSCU...)" 
+          />
+        </div>
+
         <div class="form-group">
-          <label for="container_id">Seleccionar Contenedor (Patio)</label>
+          <label for="container_id">Seleccionar Contenedor (Patio) *</label>
           <select id="container_id" formControlName="container_id" class="form-control">
-            <option value="">-- Seleccione una unidad en patio --</option>
-            @for (item of listaContenedores(); track item.id) {
+            <option value="">-- Seleccione una unidad de las {{ contenedoresFiltrados().length }} encontradas --</option>
+            @for (item of contenedoresFiltrados(); track item.id) {
               <option [value]="item.id">{{ item.code }} ({{ item.type }} - Slot: {{ item.slot }})</option>
             }
           </select>

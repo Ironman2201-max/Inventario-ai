@@ -1,5 +1,3 @@
-// invoice.models.ts
-
 export interface FacturaRequest {
   container_id: number;
   user_id: number;
@@ -26,7 +24,7 @@ export interface FacturaRequest {
 export interface FacturaResponse {
   status: string;
   message: string;
-  number: string;
-  cufe: string;
-  public_url: string;
+  number?: string;
+  cufe?: string;
+  public_url?: string;
 }

@@ -31,6 +31,10 @@ export class Menu {
     this.menuPatioAbierto.set(false);
   }
 
+  protected cerrarMenuPatio(): void {
+  this.menuPatioAbierto.set(false);
+}
+
   // Cierra el dropdown si el usuario hace clic afuera de él
   @HostListener('document:click', ['$event'])
   onClickFuera(event: MouseEvent): void {

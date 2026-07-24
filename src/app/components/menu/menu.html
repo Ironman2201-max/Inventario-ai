@@ -1,17 +1,17 @@
-@if (usuario()) {
+@if (usuario(); as u) {
   <nav class="sidebar">
     <div class="sidebar-header">
       <h3>Mi Sistema</h3>
-      <span class="user-name">{{ usuario()?.nombre }}</span>
-      <span class="badge" [class.admin]="usuario()?.rol === 'admin'" [class.user]="usuario()?.rol === 'user'">
-        {{ usuario()?.rol }}
+      <span class="user-name">{{ u.nombre }}</span>
+      <span class="badge" [class.admin]="u.rol === 'admin'" [class.user]="u.rol === 'user'">
+        {{ u.rol }}
       </span>
     </div>
 
     <ul class="nav-links">
 
       <li>
-        @if (usuario()?.rol === 'admin') {
+        @if (u.rol === 'admin') {
           <a routerLink="/admin-dashboard" routerLinkActive="active">
             <span>🏠</span>
             <span>Inicio Admin</span>
@@ -23,7 +23,7 @@
           </a>
         }
       </li>
-      
+
       <li>
         <a routerLink="/compras" routerLinkActive="active">
           <span>🛒</span>
@@ -31,57 +31,64 @@
         </a>
       </li>
 
-      @if (usuario()?.rol === 'admin') {
+      @if (u.rol === 'admin') {
         <li class="separator">Panel de Control</li>
+
         <li>
           <a routerLink="/gestion-usuarios" routerLinkActive="active">👥 Gestión de Usuarios</a>
         </li>
 
-           <!-- Agrega menu secundario para operaciones de patio -->
-      <li class="dropdown-wrapper">
-        <button type="button" class="dropdown-toggle" [class.active]="menuPatioAbierto()" (click)="toggleMenuPatio()">
-          <span>🚧</span>
-          <span>Operaciones de Patio</span>
-          <span class="dropdown-arrow" [class.open]="menuPatioAbierto()">▾</span>
-        </button>
-      
-        <ul class="dropdown-list" [class.open]="menuPatioAbierto()">
-          <li>
-            <a (click)="navegarYcerrar('/contenedores/registro')" routerLinkActive="active">
-              🚛 Registro de Entrada
-            </a>
-          </li>
-          <li>
-            <a (click)="navegarYcerrar('/contenedores/inventario')" routerLinkActive="active">
-              📦 Inventario de Patio
-            </a>
-          </li>
-          <li>
-            <a (click)="navegarYcerrar('/contenedores/salida')" routerLinkActive="active">
-              📤 Registro de Salida
-            </a>
-          </li>
-          <li>
-            <a (click)="navegarYcerrar('/contenedores/historial')" routerLinkActive="active">
-              📋 Historial de Contenedores
-            </a>
-          </li>
-        </ul>
-      </li>
+        <!-- Submenú: Operaciones de Patio -->
+        <li class="dropdown-wrapper">
+          <button
+            type="button"
+            class="dropdown-toggle"
+            [class.active]="menuPatioAbierto()"
+            [attr.aria-expanded]="menuPatioAbierto()"
+            aria-haspopup="true"
+            (click)="toggleMenuPatio()"
+          >
+            <span>🚧</span>
+            <span>Operaciones de Patio</span>
+            <span class="dropdown-arrow" [class.open]="menuPatioAbierto()">▾</span>
+          </button>
+
+          <ul class="dropdown-list" [class.open]="menuPatioAbierto()">
+            <li>
+              <a routerLink="/contenedores/registro" routerLinkActive="active" (click)="cerrarMenuPatio()">
+                🚛 Registro de Entrada
+              </a>
+            </li>
+            <li>
+              <a routerLink="/contenedores/inventario" routerLinkActive="active" (click)="cerrarMenuPatio()">
+                📦 Inventario de Patio
+              </a>
+            </li>
+            <li>
+              <a routerLink="/contenedores/salida" routerLinkActive="active" (click)="cerrarMenuPatio()">
+                📤 Registro de Salida
+              </a>
+            </li>
+            <li>
+              <a routerLink="/contenedores/historial" routerLinkActive="active" (click)="cerrarMenuPatio()">
+                📋 Historial de Contenedores
+              </a>
+            </li>
+          </ul>
+        </li>
 
         <li>
           <a routerLink="/facturacion" routerLinkActive="active-menu">🧾 Facturación Electrónica</a>
         </li>
-        
+        <li>
+          <a routerLink="/facturacion-historial" routerLinkActive="active-menu">📋 Historial de Facturas</a>
+        </li>
         <li>
           <a routerLink="/reportes" routerLinkActive="active">📊 Reportes del Sistema</a>
         </li>
         <li>
           <a routerLink="/configuracion" routerLinkActive="active">⚙️ Ajustes Globales</a>
         </li>
-      
-
-        
       }
     </ul>
 

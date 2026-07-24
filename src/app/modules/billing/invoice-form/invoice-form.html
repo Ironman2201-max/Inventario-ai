@@ -1,82 +1,213 @@
-<div class="billing-container">
-  <h2>🧾 Facturación Electrónica DIAN (Módulo Factus)</h2>
-  <p>Generación de comprobantes y liquidación fiscal de servicios de almacenamiento de patio.</p>
-
-  <div *ngIf="error()" class="alert error-alert">
-    <h4>⚠️ Error de Validación (DIAN / Factus)</h4>
-    <p>{{ error() }}</p>
-    
-    <div *ngIf="facturaForm.controls" class="error-debug">
-      <p>Revise que los datos del cliente correspondan a un NIT/Cédula real en el ambiente de pruebas.</p>
+<div class="invoice-container">
+  <!-- Encabezado Estilizado -->
+  <header class="invoice-header">
+    <div class="header-content">
+      <div class="badge-tag">Módulo Fiscal DIAN</div>
+      <h2>📄 Facturación Electrónica de Patio</h2>
+      <p>Emisión de comprobantes fiscales y gestión de comprobantes emitidos en la Terminal de Buenaventura</p>
     </div>
-  </div>
+  </header>
 
-  <div *ngIf="facturaExitosa()" class="alert success-alert">
-    <h3>✅ ¡Factura Emitida Exitosamente!</h3>
-    <p><strong>Número Legal:</strong> {{ facturaExitosa().number }}</p>
-    <p><strong>CUFE:</strong> <span class="cufe-text">{{ facturaExitosa().cufe }}</span></p>
-    <div class="actions">
-      <a [href]="facturaExitosa().public_url" target="_blank" class="btn btn-download">
-        📄 Ver PDF Oficial DIAN
-      </a>
+  <!-- Mensajes de Alerta -->
+  @if (error()) {
+    <div class="status-alert alert-danger">
+      <span class="alert-icon">⚠️</span>
+      <div class="alert-body">
+        <strong>Error de Transmisión</strong>
+        <p>{{ error() }}</p>
+      </div>
     </div>
-  </div>
+  }
 
-  <form (ngSubmit)="procesarFactura()" #facturaForm="ngForm" class="invoice-form">
-    
-    <div class="form-group">
-      <label>ID del Contenedor a Liquidar *</label>
-      <input type="number" [(ngModel)]="form.container_id" name="container_id" placeholder="Ej: 3" required>
+  @if (facturaExitosa(); as factura) {
+    <div class="status-alert alert-success">
+      <span class="alert-icon">🎉</span>
+      <div class="alert-body">
+        <strong>¡Factura {{ factura.number }} Emitida Exitosamente!</strong>
+        <p class="cufe-code">CUFE: <code>{{ factura.cufe }}</code></p>
+        @if (factura.public_url) {
+          <a [href]="factura.public_url" target="_blank" rel="noopener noreferrer" class="btn-download-pdf">
+            📥 Descargar Representación Gráfica (PDF)
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- 1. FORMULARIO DE FACTURACIÓN -->
+  <form (ngSubmit)="procesarFactura()" class="invoice-card">
+    <div class="card-section-title">
+      <h3>1. Selección de Unidad y Datos Tributarios</h3>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Tipo de Persona</label>
-        <select [(ngModel)]="form.legal_organization_id" name="legal_organization_id">
-          <option [value]="2">Persona Natural</option>
-          <option [value]="1">Persona Jurídica (Empresa)</option>
+    <div class="form-grid">
+      <!-- SELECT CON BUSCADOR EN TIEMPO REAL -->
+      <div class="form-field full-width">
+        <label for="container_search">Buscar y Seleccionar Contenedor Despachado *</label>
+        
+        <!-- Input Filtro / Buscador -->
+        <div class="search-box mb-2">
+          <input 
+            type="text" 
+            id="container_search"
+            [ngModel]="busquedaContenedor()" 
+            (ngModelChange)="busquedaContenedor.set($event)"
+            name="busquedaContenedor" 
+            class="custom-input search-input" 
+            placeholder="🔍 Escriba el código ISO (ej: MSCU1234567) para filtrar..." 
+          />
+        </div>
+
+        <!-- Select Filtrado -->
+        <select 
+          id="container_id" 
+          [(ngModel)]="form.container_id" 
+          name="container_id" 
+          class="custom-select"
+          required
+        >
+          <option value="">-- Seleccione una unidad de las {{ contenedoresFiltrados().length }} encontradas --</option>
+          @for (item of contenedoresFiltrados(); track item.id) {
+            <option [value]="item.id">
+              📦 {{ item.code }} ({{ item.type }} - Salida: {{ item.exit_date | date:'dd/MM/yyyy hh:mm a' }})
+            </option>
+          }
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Tipo Documento</label>
-        <select [(ngModel)]="form.identification_document_id" name="identification_document_id">
-          <option [value]="1" *ngIf="form.legal_organization_id == 2">Cédula de Ciudadanía</option>
-          <option [value]="3" *ngIf="form.legal_organization_id == 1">NIT (Número de Identificación Tributaria)</option>
+      <!-- Personería -->
+      <div class="form-field">
+        <label for="legal_organization_id">Tipo de Personería *</label>
+        <select 
+          id="legal_organization_id" 
+          [(ngModel)]="form.legal_organization_id" 
+          (change)="onLegalOrganizationChange()"
+          name="legal_organization_id" 
+          class="custom-select"
+        >
+          <option [value]="2">Persona Natural (Cédula de Ciudadanía)</option>
+          <option [value]="1">Persona Jurídica (Empresa / NIT)</option>
         </select>
       </div>
-    </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label>Documento / NIT (Sin dígito) *</label>
-        <input type="text" [(ngModel)]="form.customer_nit" name="customer_nit" placeholder="Ej: 11111111" required>
+      <!-- Cliente -->
+      <div class="form-field">
+        <label for="customer_name">Nombre Completo / Razón Social *</label>
+        <input 
+          type="text" 
+          id="customer_name" 
+          [(ngModel)]="form.customer_name" 
+          name="customer_name" 
+          class="custom-input" 
+          placeholder="Ej: LOGÍSTICA DEL PACÍFICO S.A.S" 
+          required 
+        />
       </div>
 
-      <div class="form-group short-input" *ngIf="form.legal_organization_id == 1">
-        <label>DV</label>
-        <input type="text" [(ngModel)]="form.dv" name="dv" placeholder="0" maxlength="1">
+      <!-- Identificación NIT/Cédula + DV -->
+      <div class="form-field">
+        <label for="customer_nit">
+          {{ form.legal_organization_id == 1 ? 'NIT de la Empresa *' : 'Cédula de Ciudadanía *' }}
+        </label>
+        <div class="composite-input">
+          <input 
+            type="text" 
+            id="customer_nit" 
+            [(ngModel)]="form.customer_nit" 
+            name="customer_nit" 
+            class="custom-input" 
+            placeholder="Ej: 900123456" 
+            required 
+          />
+          @if (form.legal_organization_id == 1) {
+            <input 
+              type="text" 
+              [(ngModel)]="form.dv" 
+              name="dv" 
+              class="custom-input dv-field" 
+              maxLength="1" 
+              placeholder="DV" 
+              title="Dígito de Verificación"
+              required 
+            />
+          }
+        </div>
+      </div>
+
+      <!-- Correo Electrónico -->
+      <div class="form-field">
+        <label for="email">Correo Electrónico (Facturación) *</label>
+        <input 
+          type="email" 
+          id="email" 
+          [(ngModel)]="form.email" 
+          name="email" 
+          class="custom-input" 
+          placeholder="facturacion@empresa.com" 
+          required
+        />
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Nombre Completo / Razón Social *</label>
-      <input type="text" [(ngModel)]="form.customer_name" name="customer_name" placeholder="Ej: Transportes del Pacífico S.A.S" required>
+    <!-- 2. VALORES E IMPUESTOS -->
+    <div class="card-section-title mt-4">
+      <h3>2. Liquidación de Valores</h3>
     </div>
 
-    <div class="form-group">
-      <label>Correo Electrónico (Para envío del XML/PDF) *</label>
-      <input type="email" [(ngModel)]="form.email" name="email" placeholder="cliente@correo.com" required>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="subtotal">Subtotal Base ($ COP) *</label>
+        <div class="currency-wrapper">
+          <span class="currency-symbol">$</span>
+          <input 
+            type="number" 
+            id="subtotal" 
+            [(ngModel)]="form.subtotal" 
+            name="subtotal" 
+            class="custom-input currency-input" 
+            placeholder="0" 
+            min="1" 
+            required 
+          />
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="tax_percentage">Porcentaje IVA (%)</label>
+        <div class="percentage-wrapper">
+          <input type="number" id="tax_percentage" value="19" class="custom-input percentage-input" readonly />
+          <span class="percentage-symbol">%</span>
+        </div>
+        <small class="field-hint">Tarifa legal DIAN (19%)</small>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>Subtotal Servicio Patio ($ COP) *</label>
-      <input type="number" [(ngModel)]="form.subtotal" name="subtotal" placeholder="Valor antes de IVA" required>
-      <small class="tax-indicator">Se autocalculará +19% de IVA según normativa legal.</small>
+    <!-- Resumen -->
+    <div class="summary-box">
+      <div class="summary-row">
+        <span>Subtotal Operación:</span>
+        <strong>$ {{ form.subtotal | number:'1.0-0' }} COP</strong>
+      </div>
+      <div class="summary-row">
+        <span>IVA Aplicado (19%):</span>
+        <strong>$ {{ (form.subtotal * 0.19) | number:'1.0-0' }} COP</strong>
+      </div>
+      <div class="summary-row total-row">
+        <span>Total Operación a Transmitir:</span>
+        <span class="total-amount">$ {{ (form.subtotal * 1.19) | number:'1.0-0' }} COP</span>
+      </div>
     </div>
 
-    <button type="submit" class="btn btn-submit" [disabled]="cargando()">
-      {{ cargando() ? '⏳ Timbrando ante la DIAN...' : '🚀 Emitir Factura Electrónica' }}
-    </button>
+    <div class="form-actions">
+      <button type="submit" class="btn-submit-dian" [disabled]="cargando() || !form.container_id">
+        @if (cargando()) {
+          <span class="loader-spinner"></span>
+          <span>Transmitiendo a la DIAN...</span>
+        } @else {
+          <span>⚡ Firmar y Emitir Factura Electrónica</span>
+        }
+      </button>
+    </div>
   </form>
+
 </div>

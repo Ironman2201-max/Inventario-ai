@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Container } from '../models/container.models';   
 import { ContainerService } from '../services/container.service';
 import { AuthService } from '../../../services/auth';
@@ -8,7 +8,7 @@ import { AuthService } from '../../../services/auth';
 @Component({
   selector: 'app-container-exit',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe],
   templateUrl: './container-exit.html',
   styleUrl: './container-exit.css'
 })
@@ -27,6 +27,26 @@ export class ContainerExit implements OnInit {
   protected readonly listaContenedores = signal<Container[]>([]);
   protected readonly contenedorSeleccionado = signal<Container | null>(null);
 
+  // 🔍 Signal para el filtro/buscador de la lista
+  protected readonly busqueda = signal<string>('');
+
+  // 🔍 Computed que filtra los contenedores activos sin perder el seleccionado
+  protected readonly contenedoresFiltrados = computed(() => {
+    const termino = this.busqueda().toLowerCase().trim();
+    const lista = this.listaContenedores();
+
+    if (!termino) return lista;
+
+    return lista.filter(c => 
+      c.code.toLowerCase().includes(termino) ||
+      c.type.toLowerCase().includes(termino) ||
+      (c.slot && c.slot.toLowerCase().includes(termino)) ||
+      (c.warehouse && c.warehouse.toLowerCase().includes(termino)) ||
+      // Mantiene visible en el desplegable la opción que el usuario ya seleccionó
+      c.id === Number(this.exitForm.get('container_id')?.value)
+    );
+  });
+
   // Signals para el modal de estado
   protected readonly mostrarModal = signal(false);
   protected readonly estadoModal = signal<'cargando' | 'exito'>('cargando');
@@ -38,15 +58,14 @@ export class ContainerExit implements OnInit {
     observations: ['']
   });
 
-  // ⏱️ Cálculo reactivo del tiempo de permanencia corregido
+  // ⏱️ Cálculo reactivo del tiempo de permanencia
   protected readonly estadiaCalculada = computed(() => {
     const seleccionado = this.contenedorSeleccionado();
     if (!seleccionado || !seleccionado.entry_date) return null;
 
-    // 🛠️ Reemplazar espacio por 'T' para que 'new Date()' sea compatible universalmente
     const fechaISO = seleccionado.entry_date.replace(' ', 'T');
     const fechaIngreso = new Date(fechaISO);
-    const fechaSalida = new Date(); // Fecha actual del sistema
+    const fechaSalida = new Date();
 
     return this.calcularDiferenciaTiempo(fechaIngreso, fechaSalida);
   });
@@ -55,9 +74,13 @@ export class ContainerExit implements OnInit {
     this.capturarGPS();
     this.cargarContenedoresEnPatio();
 
-    // Escuchar cambios en la selección para actualizar el detalle de forma reactiva
+    // Sincronizar el contenedor seleccionado cuando el usuario cambia la opción del select
     this.exitForm.get('container_id')?.valueChanges.subscribe(id => {
-      const encontrado = this.listaContenedores().find(c => c.id === Number(id)) || null;
+      if (!id) {
+        this.contenedorSeleccionado.set(null);
+        return;
+      }
+      const encontrado = this.listaContenedores().find(c => Number(c.id) === Number(id)) || null;
       this.contenedorSeleccionado.set(encontrado);
     });
   }
@@ -75,12 +98,18 @@ export class ContainerExit implements OnInit {
 
   private cargarContenedoresEnPatio(): void {
     this.containerService.obtenerContenedores().subscribe({
-      next: (data) => {
-        // 🔒 Filtramos para mostrar SOLO los contenedores que siguen en patio (sin fecha de salida)
-        const activosEnPatio = data.filter(c => !c.exit_date);
+      next: (data: Container[]) => {
+        const activosEnPatio = data.filter(c => 
+          !c.exit_date || 
+          c.exit_date.trim() === '' || 
+          c.exit_date.startsWith('0000-00-00')
+        );
         this.listaContenedores.set(activosEnPatio);
       },
-      error: () => this.error.set('Error al cargar las unidades del patio desde XAMPP.')
+      error: (err: any) => {
+        console.error('Error al cargar contenedores:', err);
+        this.error.set('Error al cargar las unidades del patio desde el servidor.');
+      }
     });
   }
 
@@ -115,7 +144,6 @@ export class ContainerExit implements OnInit {
     const formValues = this.exitForm.value;
     const idContenedor = Number(formValues.container_id);
     
-    // 👤 Obtenemos los datos del usuario actual autenticado (incluida la Cédula)
     const usuarioActual = this.authService.currentUser();
     const idUsuarioActual = usuarioActual?.id ? Number(usuarioActual.id) : 2;
     const permanencia = this.estadiaCalculada();
@@ -134,23 +162,22 @@ export class ContainerExit implements OnInit {
       observations: formValues.observations || ''
     };
 
-    // Registrar la traza del movimiento de salida en el servidor
     this.containerService.registrarMovimiento(nuevoMovimiento).subscribe({
       next: () => {
         this.estadoModal.set('exito');
         this.exitForm.reset();
         this.contenedorSeleccionado.set(null);
+        this.busqueda.set('');
         
-        // Recargar el inventario filtrado (la unidad despachada ya no aparecerá)
         this.cargarContenedoresEnPatio();
 
         setTimeout(() => {
           this.mostrarModal.set(false);
         }, 2500);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.mostrarModal.set(false);
-        this.error.set(err.error?.message || 'Error al procesar el despacho en el servidor.');
+        this.error.set(err?.error?.message || 'Error al procesar el despacho en el servidor.');
       }
     });
   }

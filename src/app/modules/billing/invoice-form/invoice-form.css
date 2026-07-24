@@ -1,0 +1,223 @@
+.invoice-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #1e293b;
+}
+
+/* Header */
+.invoice-header {
+  margin-bottom: 24px;
+}
+
+.badge-tag {
+  display: inline-block;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.invoice-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #0f172a;
+}
+
+.invoice-header p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+/* Card Principal */
+.invoice-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.card-section-title {
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+.card-section-title h3 {
+  font-size: 1rem;
+  color: #334155;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Layout Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+/* Inputs y Selects */
+.custom-input, .custom-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.custom-input:focus, .custom-select:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Input Compuesto NIT + DV */
+.composite-input {
+  display: flex;
+  gap: 8px;
+}
+
+.dv-field {
+  width: 60px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Wrapper de Moneda y Porcentaje */
+.currency-wrapper, .percentage-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol, .percentage-symbol {
+  position: absolute;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.currency-symbol { left: 14px; }
+.percentage-symbol { right: 14px; }
+
+.currency-input { padding-left: 28px; }
+.percentage-input { padding-right: 28px; font-weight: 600; }
+
+.field-hint {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+/* Resumen de Totales */
+.summary-box {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 24px 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.total-row {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 10px;
+  margin-top: 10px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.total-amount {
+  font-size: 1.25rem;
+  color: #16a34a;
+}
+
+/* Alertas */
+.status-alert {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.alert-danger { background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; }
+.alert-success { background-color: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+
+.alert-icon { font-size: 1.4rem; margin-right: 12px; }
+.cufe-code { font-size: 0.8rem; word-break: break-all; margin: 4px 0; }
+
+.btn-download-pdf {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  background-color: #166534;
+  color: #ffffff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Botón Submit */
+.btn-submit-dian {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-submit-dian:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-submit-dian:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Utility */
+.mt-4 { margin-top: 24px; }

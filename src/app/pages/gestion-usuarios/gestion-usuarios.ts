@@ -5,6 +5,7 @@ import { AuthService, Usuario } from '../../services/auth';
 
 @AngularComponent({
   selector: 'app-gestion-usuarios',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './gestion-usuarios.html',
   styleUrl: './gestion-usuarios.css'
@@ -16,7 +17,7 @@ export class GestionUsuarios implements AngularOnInit {
   protected readonly mensajeExito     = AngularSignal('');
   protected readonly guardando        = AngularSignal(false);
 
-  // ✅ Signal reactivo en lugar de Map normal
+  // ✅ Signal reactivo para cambios de rol pendientes
   protected readonly cambiosPendientes = AngularSignal<Record<number, 'admin' | 'user'>>({});
 
   ngOnInit(): void {
@@ -26,7 +27,7 @@ export class GestionUsuarios implements AngularOnInit {
   private cargarUsuarios(): void {
     this.authService.obtenerTodosLosUsuarios().subscribe({
       next:  (usuarios) => this.listaUsuarios.set(usuarios),
-      error: (err)      => console.error('Error al cargar usuarios', err)
+      error: (err)      => console.error('Error al cargar usuarios:', err)
     });
   }
 
@@ -35,7 +36,6 @@ export class GestionUsuarios implements AngularOnInit {
   }
 
   protected tieneCambioPendiente(id: number): boolean {
-    // ✅ Lee el Signal — Angular detecta la dependencia y re-evalúa el @if
     return id in this.cambiosPendientes();
   }
 
@@ -43,14 +43,12 @@ export class GestionUsuarios implements AngularOnInit {
     const rolActual = this.listaUsuarios().find(u => u.id === id)?.rol;
 
     if (nuevoRol === rolActual) {
-      // Volvió al original → elimina el pendiente
       this.cambiosPendientes.update(prev => {
         const siguiente = { ...prev };
         delete siguiente[id];
         return siguiente;
       });
     } else {
-      // ✅ update() crea un objeto nuevo → Signal detecta el cambio
       this.cambiosPendientes.update(prev => ({ ...prev, [id]: nuevoRol }));
     }
   }
@@ -67,7 +65,6 @@ export class GestionUsuarios implements AngularOnInit {
           usuarios.map(u => u.id === usuarioId ? { ...u, rol: nuevoRol } : u)
         );
 
-        // Limpia solo ese pendiente
         this.cambiosPendientes.update(prev => {
           const siguiente = { ...prev };
           delete siguiente[usuarioId];
@@ -79,7 +76,7 @@ export class GestionUsuarios implements AngularOnInit {
         setTimeout(() => this.mensajeExito.set(''), 3000);
       },
       error: (err) => {
-        console.error('Error al actualizar el rol', err);
+        console.error('Error al actualizar el rol:', err);
         this.guardando.set(false);
       }
     });

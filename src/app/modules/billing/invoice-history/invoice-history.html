@@ -1,0 +1,94 @@
+<div class="history-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-info">
+      <h2>📋 Historial de Facturas Emitidas</h2>
+      <p>Consulta, seguimiento y descarga de comprobantes fiscales validados por la DIAN (Terminal Buenaventura)</p>
+    </div>
+    <button class="btn-refresh" (click)="cargarHistorialFacturas()" [disabled]="cargando()">
+      🔄 Actualizar Lista
+    </button>
+  </header>
+
+  <!-- Mensaje de Error -->
+  @if (error()) {
+    <div class="alert alert-danger">
+      ❌ {{ error() }}
+    </div>
+  }
+
+  <div class="history-card">
+    <!-- Bar de Búsqueda y Estadísticas Rápidas -->
+    <div class="table-actions">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [ngModel]="busquedaFactura()" 
+          (ngModelChange)="busquedaFactura.set($event)"
+          name="busquedaFactura" 
+          class="form-control search-input" 
+          placeholder="🔎 Buscar por N° Factura, NIT, Cliente o Código de Contenedor..." 
+        />
+      </div>
+      <div class="total-badge">
+        Total Registros: <strong>{{ facturasFiltradas().length }}</strong>
+      </div>
+    </div>
+
+    <!-- Tabla de Facturas -->
+    <div class="table-responsive">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>N° Factura</th>
+            <th>Contenedor</th>
+            <th>Cliente / Razón Social</th>
+            <th>NIT / Cédula</th>
+            <th>Total ($ COP)</th>
+            <th>Estado DIAN</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (cargando()) {
+            <tr>
+              <td colspan="7" class="loading-cell">
+                <div class="spinner"></div> Cargando comprobantes fiscales...
+              </td>
+            </tr>
+          } @else {
+            @for (factura of facturasFiltradas(); track factura.id) {
+              <tr>
+                <td><strong class="factura-num">{{ factura.number || 'N/A' }}</strong></td>
+                <td><span class="code-badge">📦 {{ factura.container_code || 'N/A' }}</span></td>
+                <td>{{ factura.customer_name }}</td>
+                <td><code>{{ factura.customer_nit }}</code></td>
+                <td class="amount-cell">$ {{ factura.total | number:'1.0-0' }}</td>
+                <td>
+                  <span class="status-badge validada">
+                    {{ factura.status || 'Validada' }}
+                  </span>
+                </td>
+                <td>
+                  @if (factura.public_url) {
+                    <a [href]="factura.public_url" target="_blank" rel="noopener noreferrer" class="btn-pdf">
+                      📄 Descargar PDF
+                    </a>
+                  } @else {
+                    <span class="text-muted">Sin PDF</span>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-msg">
+                  No se encontraron facturas emitidas que coincidan con la búsqueda.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -9,6 +9,8 @@ import { ContainerRegister } from './modules/containers/container-register/conta
 import { ContainerList } from './modules/containers/container-list/container-list';
 import { ContainerExit } from './modules/containers/container-exit/container-exit';
 import { ContainerHistory } from './modules/containers/container-history/container-history';
+
+
 export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'registro', component: Registro },
@@ -39,6 +41,11 @@ export const routes: Routes = [
   { path: 'contenedores/inventario', component: ContainerList },
  { path: 'contenedores/historial', component: ContainerHistory },
 
+ // En app.routes.ts:
+{
+  path: 'facturacion-historial',
+  loadComponent: () => import('./modules/billing/invoice-history/invoice-history').then(m => m.InvoiceHistory)
+},
      
   // Redirección por defecto si la ruta no existe
   { path: '', redirectTo: '/login', pathMatch: 'full' },
