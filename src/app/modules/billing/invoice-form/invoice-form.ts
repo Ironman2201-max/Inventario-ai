@@ -24,6 +24,10 @@ export class InvoiceForm implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly facturaExitosa = signal<FacturaResponse | null>(null);
 
+  // 🪟 Control del Modal de Confirmación
+  protected mostrarModalExito: boolean = false;
+  protected facturaEmitida: FacturaResponse | null = null;
+
   // Signal para contenedores despachados (con fecha de salida)
   protected readonly contenedoresDespachados = signal<Container[]>([]);
   // 🔍 Signal para el filtro/buscador en tiempo real de contenedores
@@ -142,8 +146,13 @@ export class InvoiceForm implements OnInit {
     }
 
     this.invoiceService.emitirFactura(payload).subscribe({
-      next: (res) => {
+      next: (res: FacturaResponse) => {
         this.facturaExitosa.set(res);
+        
+        // 🚀 Desplegar el Modal con la respuesta devuelta por Factus
+        this.facturaEmitida = res;
+        this.mostrarModalExito = true;
+
         this.cargando.set(false);
         this.limpiarFormulario();
         this.cargarUnidadesDespachadas(); // Recargar select
@@ -155,6 +164,20 @@ export class InvoiceForm implements OnInit {
         this.cargando.set(false);
       }
     });
+  }
+
+  // 📋 Método para copiar el CUFE al portapapeles
+  protected copiarCufe(cufe: string): void {
+    if (cufe) {
+      navigator.clipboard.writeText(cufe);
+      alert('¡CUFE copiado al portapapeles!');
+    }
+  }
+
+  // ❌ Método para cerrar el modal
+  protected cerrarModal(): void {
+    this.mostrarModalExito = false;
+    this.facturaEmitida = null;
   }
 
   private limpiarFormulario(): void {

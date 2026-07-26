@@ -209,5 +209,67 @@
       </button>
     </div>
   </form>
+  
+<!-- Modal Personalizado con Fondo Blanco Opaco -->
+@if (mostrarModalExito && facturaEmitida) {
+  <!-- Capa de Fondo Oscuro que al hacer clic también cierra -->
+  <div class="custom-modal-overlay" (click)="cerrarModal()"></div>
+
+  <!-- Contenedor Centrado -->
+  <div class="custom-modal-container">
+    <div class="custom-modal-card">
+      
+      <!-- Cabecera Verde -->
+      <div class="custom-modal-header">
+        <h3>✅ Factura Validada por la DIAN</h3>
+        <button type="button" class="btn-close-modal" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <!-- Cuerpo del Modal -->
+      <div class="custom-modal-body">
+        <div class="modal-alert-box">
+          <strong>🎉 ¡Emisión Exitosa!</strong> Comprobante registrado y validado en la DIAN.
+        </div>
+
+        <div class="modal-info-grid">
+          <div class="info-block">
+            <label>Nº Factura</label>
+            <span>{{ facturaEmitida.number }}</span>
+          </div>
+
+          <div class="info-block">
+            <label>Estado DIAN</label>
+            <span style="color: #059669;">APROBADA</span>
+          </div>
+
+          <div class="info-block cufe-block">
+            <label>CUFE</label>
+            <div class="cufe-input-group">
+              <input type="text" [value]="facturaEmitida.cufe" readonly #cufeInput />
+              <button type="button" class="btn-copy-cufe" (click)="copiarCufe(cufeInput.value)">
+                📋 Copiar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del Modal -->
+      <div class="custom-modal-footer">
+        <button type="button" class="btn-modal-close" (click)="cerrarModal()">
+          Cerrar
+        </button>
+
+        @if (facturaEmitida.public_url) {
+          <a [href]="facturaEmitida.public_url" target="_blank" rel="noopener noreferrer" class="btn-modal-pdf">
+            📥 Descargar PDF Oficial
+          </a>
+        }
+      </div>
+
+    </div>
+  </div>
+}
+
 
 </div>
