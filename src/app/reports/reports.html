@@ -1,0 +1,149 @@
+<div class="reports-container">
+  
+  <!-- Encabezado del Módulo -->
+  <header class="reports-header">
+    <div>
+      <h2>📊 Panel de Reportes y Analítica Local</h2>
+      <p>Métricas generales de facturación y estado de unidades en patio</p>
+    </div>
+    <button class="btn-print" (click)="imprimirReporte()">
+      🖨️ Imprimir / Guardar PDF
+    </button>
+  </header>
+
+  <!-- Mensaje de Error si la conexión local falla -->
+  @if (error()) {
+    <div class="error-banner">
+      <span>⚠️ {{ error() }}</span>
+    </div>
+  }
+
+  <!-- Filtros por Rango de Fechas -->
+  <div class="filter-card">
+    <div class="filter-group">
+      <label for="fechaInicio">Fecha Inicial:</label>
+      <input type="date" id="fechaInicio" [(ngModel)]="fechaInicio" class="custom-date-input" />
+    </div>
+
+    <div class="filter-group">
+      <label for="fechaFin">Fecha Final:</label>
+      <input type="date" id="fechaFin" [(ngModel)]="fechaFin" class="custom-date-input" />
+    </div>
+
+    <button class="btn-filter" (click)="consultarReportes()" [disabled]="cargando()">
+      @if (cargando()) {
+        <span>Cargando...</span>
+      } @else {
+        <span>🔍 Actualizar Datos</span>
+      }
+    </button>
+  </div>
+
+  <!-- Vista Principal de Métricas -->
+  @if (reportesData(); as data) {
+    
+    <!-- Tarjetas KPI -->
+    <div class="kpi-grid">
+      
+      <!-- Facturación Bruta -->
+      <div class="kpi-card success">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-content">
+          <small>Total Facturado</small>
+          <h3>{{ data.facturacion.ingresos_totales | currency:'COP':'symbol-narrow':'1.0-0' }}</h3>
+          <span class="kpi-subtext">{{ data.facturacion.total_facturas }} factura(s) registrada(s)</span>
+        </div>
+      </div>
+
+      <!-- Recaudo de IVA -->
+      <div class="kpi-card info">
+        <div class="kpi-icon">🏛️</div>
+        <div class="kpi-content">
+          <small>IVA Recaudado (19%)</small>
+          <h3>{{ data.facturacion.iva_acumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</h3>
+          <span class="kpi-subtext">Base: {{ data.facturacion.subtotal_acumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <!-- Activos en Patio -->
+      <div class="kpi-card warning">
+        <div class="kpi-icon">🏗️</div>
+        <div class="kpi-content">
+          <small>Contenedores en Patio</small>
+          <h3>{{ data.contenedores.activos_patio }}</h3>
+          <span class="kpi-subtext">Unidades activas</span>
+        </div>
+      </div>
+
+      <!-- Despachados -->
+      <div class="kpi-card neutral">
+        <div class="kpi-icon">🚚</div>
+        <div class="kpi-content">
+          <small>Unidades Despachadas</small>
+          <h3>{{ data.contenedores.despachados }}</h3>
+          <span class="kpi-subtext">Total histórico: {{ data.contenedores.total_registrados }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tablas Detalladas -->
+    <div class="tables-grid">
+      
+      <!-- Distribución por Tipo de Unidad -->
+      <div class="card-table">
+        <h3>📦 Unidades por Tipo</h3>
+        @if (data.contenedores.por_tipo.length > 0) {
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo de Contenedor</th>
+                <th>Total Registrado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of data.contenedores.por_tipo; track item.type) {
+                <tr>
+                  <td><strong>{{ item.type }}</strong></td>
+                  <td>{{ item.total }} unidad(es)</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="empty-text">No hay registro de contenedores creados en el sistema.</p>
+        }
+      </div>
+
+      <!-- Últimos Comprobantes -->
+      <div class="card-table">
+        <h3>🧾 Últimos Comprobantes Emitidos</h3>
+        @if (data.ultimas_facturas.length > 0) {
+          <table>
+            <thead>
+              <tr>
+                <th>Nº Factura</th>
+                <th>Cliente / NIT</th>
+                <th>Contenedor</th>
+                <th>Monto Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (f of data.ultimas_facturas; track f.id) {
+                <tr>
+                  <td><strong>{{ f.number }}</strong></td>
+                  <td>{{ f.customer_name }} <br><small class="text-muted">{{ f.customer_nit }}</small></td>
+                  <td>📦 {{ f.container_code || 'N/A' }}</td>
+                  <td class="text-success fw-bold">{{ f.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="empty-text">No hay facturas registradas en este rango de fechas.</p>
+        }
+      </div>
+
+    </div>
+  }
+</div>

@@ -9,6 +9,8 @@ import { ContainerRegister } from './modules/containers/container-register/conta
 import { ContainerList } from './modules/containers/container-list/container-list';
 import { ContainerExit } from './modules/containers/container-exit/container-exit';
 import { ContainerHistory } from './modules/containers/container-history/container-history';
+import { ReportsComponent } from './reports/reports'; // Asegúrate de que la ruta sea correcta
+
 
 
 export const routes: Routes = [
@@ -40,8 +42,16 @@ export const routes: Routes = [
  { path: 'contenedores/salida', component: ContainerExit },
   { path: 'contenedores/inventario', component: ContainerList },
  { path: 'contenedores/historial', component: ContainerHistory },
+   
+ //reportes
 
- // En app.routes.ts:
+ {
+   path: 'reportes',
+   component: ReportsComponent,
+   canActivate: [authGuard],
+   data: { expectedRole: 'admin' }
+ },
+   
 {
   path: 'facturacion-historial',
   loadComponent: () => import('./modules/billing/invoice-history/invoice-history').then(m => m.InvoiceHistory)
@@ -52,3 +62,5 @@ export const routes: Routes = [
   { path: '**', redirectTo: '/login' }
    
 ];
+
+
