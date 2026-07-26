@@ -1,15 +1,50 @@
 <div class="dashboard-container user-theme">
+  <!-- Navegación Superior -->
   <nav class="navbar">
-    <h1>Mi Perfil</h1>
+    <h1>Mi Perfil - Portal Operativo</h1>
     <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
   </nav>
+
   <main class="content">
+    <!-- Tarjeta de Bienvenida y Perfil -->
     <div class="welcome-card">
-      <h2>Hola, {{ usuario()?.nombre }}</h2>
+      <div class="welcome-header">
+        <div class="avatar-circle">
+          {{ usuario()?.nombre?.charAt(0) || 'U' }}
+        </div>
+        <div>
+          <h2>Hola, {{ usuario()?.nombre }}</h2>
+          <p class="welcome-subtitle">Bienvenido al Portal Operativo de la Terminal</p>
+        </div>
+      </div>
+
       <div class="user-details">
         <p><strong>Correo:</strong> {{ usuario()?.correo }}</p>
         <p><strong>Rol:</strong> <span class="badge user">{{ usuario()?.rol }}</span></p>
       </div>
     </div>
+
+    <!-- ⚡ Accesos Rápidos Módulos Principales -->
+    <section class="quick-actions-section">
+      <h3>⚡ Accesos Rápido a Operaciones</h3>
+      
+      <div class="actions-grid">
+        <!-- Contenedores -->
+        <div class="action-card" (click)="irAContenedores()">
+          <div class="action-icon">📦</div>
+          <h4>Gestión de Contenedores</h4>
+          <p>Registrar ingresos, salidas y consultar unidades activas en patio.</p>
+          <button class="btn-action">Ir a Contenedores →</button>
+        </div>
+
+        <!-- Facturación -->
+        <div class="action-card" (click)="irAFacturacion()">
+          <div class="action-icon">🧾</div>
+          <h4>Emitir Factura DIAN</h4>
+          <p>Módulo de facturación electrónica para unidades despachadas.</p>
+          <button class="btn-action">Emitir Factura →</button>
+        </div>
+      </div>
+    </section>
   </main>
 </div>

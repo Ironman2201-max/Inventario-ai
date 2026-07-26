@@ -1,0 +1,184 @@
+/* ==========================================
+   PANEL DEL USUARIO (TEMA OPERADOR)
+   ========================================== */
+.dashboard-container.user-theme {
+  min-height: 100vh;
+  background-color: #f1f5f9;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #0f172a;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #1e293b;
+  color: #ffffff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.btn-logout {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-logout:hover {
+  background-color: #dc2626;
+}
+
+/* Contenido Principal */
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Tarjeta de Perfil */
+.welcome-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.welcome-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-circle {
+  width: 56px;
+  height: 56px;
+  background-color: #0284c7;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.welcome-card h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #0f172a;
+}
+
+.welcome-subtitle {
+  margin: 0.25rem 0 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.user-details {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.user-details p {
+  margin: 0;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.badge.user {
+  background-color: #0284c7;
+  color: #ffffff;
+  padding: 0.25rem 0.65rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Accesos Rápidos */
+.quick-actions-section h3 {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  border-color: #38bdf8;
+}
+
+.action-icon {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.action-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.action-card p {
+  margin: 0 0 1.25rem 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.btn-action {
+  background-color: #f8fafc;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.action-card:hover .btn-action {
+  background-color: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}

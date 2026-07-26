@@ -1,9 +1,12 @@
 <div class="dashboard-container admin-theme">
+  <!-- Navbar -->
   <nav class="navbar">
     <h1>Panel de Administrador</h1>
     <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
   </nav>
+
   <main class="content">
+    <!-- Bienvenida -->
     <div class="welcome-card">
       <h2>¡Bienvenido, {{ usuario()?.nombre }}!</h2>
       <div class="user-details">
@@ -11,5 +14,152 @@
         <p><strong>Rol:</strong> <span class="badge admin">{{ usuario()?.rol }}</span></p>
       </div>
     </div>
+
+    <!-- Módulo de Reportes -->
+    <section class="reports-section mt-4">
+      <div class="section-header">
+        <div>
+          <h3>📊 Resumen Operativo y Financiero</h3>
+          <p class="subtitle">Métricas en tiempo real de la Terminal de Buenaventura</p>
+        </div>
+        <button class="btn-print" (click)="imprimirReporte()">
+          🖨️ Exportar Reporte
+        </button>
+      </div>
+
+      <!-- Filtro de Fechas -->
+      <div class="filter-card">
+        <div class="filter-group">
+          <label for="fechaInicio">Desde:</label>
+          <input type="date" id="fechaInicio" [(ngModel)]="fechaInicio" class="custom-date-input" />
+        </div>
+
+        <div class="filter-group">
+          <label for="fechaFin">Hasta:</label>
+          <input type="date" id="fechaFin" [(ngModel)]="fechaFin" class="custom-date-input" />
+        </div>
+
+        <button class="btn-filter" (click)="consultarReportes()" [disabled]="cargando()">
+          @if (cargando()) {
+            <span>Cargando...</span>
+          } @else {
+            <span>🔍 Filtrar Métricas</span>
+          }
+        </button>
+      </div>
+
+      @if (reportesData(); as data) {
+        <!-- Tarjetas KPI -->
+        <div class="kpi-grid">
+          <div class="kpi-card success">
+            <div class="kpi-icon">💰</div>
+            <div class="kpi-content">
+              <small>Total Facturado</small>
+              <h3>{{ data.facturacion.ingresos_totales | currency:'COP':'symbol-narrow':'1.0-0' }}</h3>
+              <span class="kpi-subtext">{{ data.facturacion.total_facturas }} factura(s) emitida(s)</span>
+            </div>
+          </div>
+
+          <div class="kpi-card info">
+            <div class="kpi-icon">🏛️</div>
+            <div class="kpi-content">
+              <small>IVA Recaudado (19%)</small>
+              <h3>{{ data.facturacion.iva_acumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</h3>
+              <span class="kpi-subtext">Base: {{ data.facturacion.subtotal_acumulado | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+            </div>
+          </div>
+
+          <div class="kpi-card warning">
+            <div class="kpi-icon">🏗️</div>
+            <div class="kpi-content">
+              <small>Activos en Patio</small>
+              <h3>{{ data.contenedores.activos_patio }}</h3>
+              <span class="kpi-subtext">Unidades en inventario</span>
+            </div>
+          </div>
+
+          <div class="kpi-card neutral">
+            <div class="kpi-icon">🚚</div>
+            <div class="kpi-content">
+              <small>Despachados</small>
+              <h3>{{ data.contenedores.despachados }}</h3>
+              <span class="kpi-subtext">Histórico: {{ data.contenedores.total_registrados }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 📈 SECCIÓN DE GRÁFICOS VISUALES -->
+        <div class="charts-grid mb-4">
+          <div class="card-chart">
+            <h4>📊 Balance Financiero ($ COP)</h4>
+            <div class="chart-wrapper">
+              <canvas #incomeChartCanvas></canvas>
+            </div>
+          </div>
+
+          <div class="card-chart">
+            <h4>🍩 Distribución de Contenedores por Tipo</h4>
+            <div class="chart-wrapper">
+              <canvas #containersChartCanvas></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tablas de Resumen Operativo -->
+        <div class="tables-grid">
+          <div class="card-table">
+            <h4>📦 Distribución por Tipo de Unidad</h4>
+            @if (data.contenedores.por_tipo.length > 0) {
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tipo of data.contenedores.por_tipo; track tipo.type) {
+                    <tr>
+                      <td><strong>{{ tipo.type }}</strong></td>
+                      <td>{{ tipo.total }} ud.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <p class="empty-text">Sin datos de inventario.</p>
+            }
+          </div>
+
+          <div class="card-table">
+            <h4>🧾 Últimas Facturas Emitidas</h4>
+            @if (data.ultimas_facturas.length > 0) {
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nº Factura</th>
+                    <th>Cliente / NIT</th>
+                    <th>Contenedor</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (f of data.ultimas_facturas; track f.id) {
+                    <tr>
+                      <td><strong>{{ f.number }}</strong></td>
+                      <td>{{ f.customer_name }} <br><small class="text-muted">{{ f.customer_nit }}</small></td>
+                      <td>📦 {{ f.container_code || 'N/A' }}</td>
+                      <td class="text-success fw-bold">{{ f.total | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <p class="empty-text">Sin comprobantes en las fechas seleccionadas.</p>
+            }
+          </div>
+        </div>
+      }
+    </section>
   </main>
 </div>
