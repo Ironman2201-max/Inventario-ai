@@ -1,0 +1,195 @@
+/* Fuente */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+/* Fondo */
+.auth-container{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+    linear-gradient(rgba(1, 71, 111, 0.7),
+    rgba(0,110,140,.70)),
+    url('/assets/img/muelle.jpg');
+
+    background-size:cover;
+    background-position:center;
+}
+
+/* Tarjeta */
+
+.auth-card{
+
+    width:420px;
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(12px);
+
+    border-radius:20px;
+
+    padding:40px;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.25);
+
+    border-top:6px solid #05BFDB;
+
+}
+
+/* Logo */
+
+.logo-section{
+
+    text-align:center;
+    margin-bottom:30px;
+
+}
+
+.logo-section img{
+
+    width:80px;
+    margin-bottom:10px;
+
+}
+
+.logo-section h2{
+
+    color:#0A4D68;
+    font-size:28px;
+    font-weight:700;
+
+}
+
+.logo-section p{
+
+    color:#666;
+    font-size:14px;
+
+}
+
+/* Labels */
+
+.form-group{
+
+    margin-bottom:20px;
+
+}
+
+.form-group label{
+
+    display:block;
+    margin-bottom:8px;
+
+    color:#0A4D68;
+    font-weight:600;
+
+}
+
+/* Inputs */
+
+.form-group input{
+
+    width:100%;
+    padding:14px;
+
+    border-radius:12px;
+    border:2px solid #d9d9d9;
+
+    transition:.3s;
+    font-size:15px;
+
+}
+
+.form-group input:focus{
+
+    outline:none;
+    border-color:#05BFDB;
+
+    box-shadow:
+    0 0 10px rgba(5,191,219,.3);
+
+}
+
+/* Botón */
+
+.btn-primary{
+
+    width:100%;
+    padding:14px;
+
+    border:none;
+    border-radius:12px;
+
+    background:linear-gradient(90deg,#0A4D68,#05BFDB);
+
+    color:white;
+    font-size:17px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.btn-primary:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 10px 20px rgba(0,0,0,.25);
+
+}
+
+.btn-primary:disabled{
+
+    background:#9ea7ad;
+    cursor:not-allowed;
+
+}
+
+/* Link */
+
+.auth-switch{
+
+    text-align:center;
+    margin-top:25px;
+
+}
+
+.auth-switch a{
+
+    color:#088395;
+    text-decoration:none;
+    font-weight:600;
+
+}
+
+.auth-switch a:hover{
+
+    color:#0A4D68;
+
+}
+
+
+
+.error-text{
+
+    color:#d62828;
+    font-size:13px;
+
+}
+
+.alert{
+
+    margin-bottom:20px;
+    border-radius:10px;
+
+}

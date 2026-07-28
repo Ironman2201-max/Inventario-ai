@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-registro',
+  standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './registro.html',
   styleUrl: './registro.css'
@@ -17,9 +18,10 @@ export class Registro {
   protected readonly mensajeError = signal('');
   protected readonly mensajeExito = signal('');
 
-  // 🔽 Eliminamos el campo 'rol' de las validaciones del formulario
+  // 📝 Agregamos el control 'cedula' con validación de solo números
   protected readonly registroForm = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
+    cedula: ['', [Validators.required, Validators.pattern('^[0-9]{6,12}$')]],
     correo: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
@@ -32,12 +34,9 @@ export class Registro {
     this.mensajeError.set('');
     this.mensajeExito.set('');
 
-    // Al enviar los datos, Angular mandará solo nombre, correo y contraseña.
-    // Tu archivo 'registro.php' en XAMPP ya está programado para ponerle 'user' 
-    // por defecto si no le llega este campo.
     this.authService.registrar(this.registroForm.value).subscribe({
       next: () => {
-        this.mensajeExito.set('¡Registro exitoso! Guardado como Usuario Regular.');
+        this.mensajeExito.set('¡Registro exitoso! Redirigiendo...');
         setTimeout(() => this.router.navigate(['/login']), 1500);
       },
       error: (err) => {

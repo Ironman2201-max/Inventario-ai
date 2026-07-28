@@ -1,0 +1,190 @@
+@import url('https://es.vecteezy.com/fotos-gratis/logistica');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+.auth-container{
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background-image:
+    linear-gradient(rgba(9, 54, 94, 0.65),rgba(5,40,70,.65)),
+    url("https://static.vecteezy.com/system/resources/thumbnails/020/173/239/small/global-business-logistics-transport-import-export-and-international-trade-concept-logistics-distribution-of-containers-cargo-freight-ship-train-truck-and-plane-transportation-industry-background-photo.jpg");
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+}
+
+.auth-card{
+
+    width:430px;
+
+    background:rgba(255,255,255,.95);
+
+    backdrop-filter:blur(15px);
+
+    border-radius:20px;
+
+    padding:40px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+
+    border-top:6px solid #05BFDB;
+
+}
+
+.auth-card h2{
+
+    text-align:center;
+
+    color:#0A4D68;
+
+    font-size:30px;
+
+    margin-bottom:5px;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:25px;
+
+}
+
+.form-group{
+
+    margin-bottom:18px;
+
+}
+
+.form-group label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-weight:600;
+
+    color:#0A4D68;
+
+}
+
+.form-group input{
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:2px solid #ddd;
+
+    font-size:15px;
+
+    transition:.3s;
+
+}
+
+.form-group input:focus{
+
+    outline:none;
+
+    border-color:#05BFDB;
+
+    box-shadow:0 0 10px rgba(5,191,219,.35);
+
+}
+
+.btn-primary{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:linear-gradient(90deg,#0A4D68,#05BFDB);
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.btn-primary:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 20px rgba(0,0,0,.25);
+
+}
+
+.btn-primary:disabled{
+
+    background:#999;
+
+    cursor:not-allowed;
+
+}
+
+.auth-switch{
+
+    text-align:center;
+
+    margin-top:25px;
+
+}
+
+.auth-switch a{
+
+    text-decoration:none;
+
+    color:#088395;
+
+    font-weight:600;
+
+}
+
+.auth-switch a:hover{
+
+    color:#0A4D68;
+
+}
+
+.error-text{
+
+    color:#d62828;
+
+    font-size:13px;
+
+}
+
+.alert{
+
+    margin-bottom:20px;
+
+    border-radius:10px;
+
+}

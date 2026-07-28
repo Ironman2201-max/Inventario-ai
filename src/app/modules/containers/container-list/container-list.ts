@@ -22,17 +22,24 @@ export class ContainerList implements OnInit {
   // 🔍 Signal para el filtro/buscador en tiempo real
   protected readonly terminoBusqueda = signal<string>('');
 
-  // 🔍 Computed: Filtra en tiempo real por código, tipo, bodega o slot
+  // 🔍 Computed: Filtra en tiempo real de forma segura sin romper con nulos
   protected readonly contenedoresFiltrados = computed(() => {
     const termino = this.terminoBusqueda().toLowerCase().trim();
     if (!termino) return this.contenedores();
 
-    return this.contenedores().filter(c => 
-      c.code.toLowerCase().includes(termino) ||
-      c.type.toLowerCase().includes(termino) ||
-      (c.warehouse && c.warehouse.toLowerCase().includes(termino)) ||
-      (c.slot && c.slot.toLowerCase().includes(termino))
-    );
+    return this.contenedores().filter(c => {
+      const code = (c.code || '').toLowerCase();
+      const type = (c.type || '').toLowerCase();
+      const warehouse = (c.warehouse || '').toLowerCase();
+      const slot = (c.slot || '').toLowerCase();
+
+      return (
+        code.includes(termino) ||
+        type.includes(termino) ||
+        warehouse.includes(termino) ||
+        slot.includes(termino)
+      );
+    });
   });
 
   ngOnInit(): void {
@@ -45,17 +52,23 @@ export class ContainerList implements OnInit {
 
     this.containerService.obtenerContenedores().subscribe({
       next: (data: Container[]) => {
-        // 🔒 FILTRO CLAVE: Mostramos solo las unidades que NO tienen fecha de salida (Siguen en patio)
-        const activosEnPatio = data.filter(c => 
-          !c.exit_date || 
-          c.exit_date.trim() === '' || 
-          c.exit_date.startsWith('0000-00-00')
-        );
+        if (!Array.isArray(data)) {
+          this.contenedores.set([]);
+          this.cargando.set(false);
+          return;
+        }
+
+        // 🔒 FILTRO CLAVE: Unidades en patio (sin fecha de salida o fecha nula/inválida)
+        const activosEnPatio = data.filter(c => {
+          if (!c.exit_date) return true;
+          const fechaStr = String(c.exit_date).trim();
+          return fechaStr === '' || fechaStr.startsWith('0000-00-00');
+        });
 
         this.contenedores.set(activosEnPatio);
         this.cargando.set(false);
       },
-      error: (err: any) => {
+      error: (err: unknown) => {
         console.error('Error al traer contenedores:', err);
         this.error.set('No se pudo conectar con el servidor para cargar el inventario.');
         this.cargando.set(false);

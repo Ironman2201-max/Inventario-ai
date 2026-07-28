@@ -19,13 +19,8 @@
     <!-- Bar de Búsqueda y Contador -->
     <div class="table-actions">
       <div class="search-box">
-        <input 
-          type="text" 
-          [ngModel]="terminoBusqueda()" 
-          (ngModelChange)="terminoBusqueda.set($event)"
-          class="form-control search-input" 
-          placeholder="🔎 Buscar por código ISO, tipo, bodega o bahía..." 
-        />
+        <input type="text" [value]="terminoBusqueda()" (input)="terminoBusqueda.set($any($event.target).value)"
+          class="form-control search-input" placeholder="🔎 Buscar por código ISO, tipo, bodega o bahía..." />
       </div>
       <div class="badge-count">
         Unidades en Patio: <strong>{{ contenedoresFiltrados().length }}</strong>
