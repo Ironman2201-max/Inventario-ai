@@ -2,7 +2,7 @@
   <!-- Navegación Superior -->
   <nav class="navbar">
     <h1>Mi Perfil - Portal Operativo</h1>
-    <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+    <button type="button" (click)="logout()" class="btn-logout">🚪 Cerrar Sesión</button>
   </nav>
 
   <main class="content">
@@ -26,24 +26,30 @@
 
     <!-- ⚡ Accesos Rápidos Módulos Principales -->
     <section class="quick-actions-section">
-      <h3>⚡ Accesos Rápido a Operaciones</h3>
+      <h3>⚡ Accesos Rápidos a Operaciones</h3>
       
       <div class="actions-grid">
-        <!-- Contenedores -->
+        
+        <!-- Módulo 1: Contenedores -->
         <div class="action-card" (click)="irAContenedores()">
           <div class="action-icon">📦</div>
           <h4>Gestión de Contenedores</h4>
-          <p>Registrar ingresos, salidas y consultar unidades activas en patio.</p>
-          <button class="btn-action">Ir a Contenedores →</button>
+          <p>Registrar ingresos, salidas y consultar unidades activas en el patio.</p>
+          <button type="button" class="btn-action" (click)="$event.stopPropagation(); irAContenedores()">
+            Ir a Contenedores →
+          </button>
         </div>
 
-        <!-- Facturación -->
+        <!-- Módulo 2: Facturación -->
         <div class="action-card" (click)="irAFacturacion()">
           <div class="action-icon">🧾</div>
           <h4>Emitir Factura DIAN</h4>
-          <p>Módulo de facturación electrónica para unidades despachadas.</p>
-          <button class="btn-action">Emitir Factura →</button>
+          <p>Módulo de emisión y generación de facturación electrónica para unidades despachadas.</p>
+          <button type="button" class="btn-action" (click)="$event.stopPropagation(); irAFacturacion()">
+            Emitir Factura →
+          </button>
         </div>
+
       </div>
     </section>
   </main>

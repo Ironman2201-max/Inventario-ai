@@ -6,29 +6,39 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Obtenemos el usuario actual desde el Signal del servicio
+  // 1. Obtenemos el usuario autenticado desde el Signal
   const usuarioActual = authService.currentUser();
 
-  // 1. Si no está logueado, redirigir al login
   if (!usuarioActual) {
     router.navigate(['/login']);
     return false;
   }
 
-  // 2. Obtener el rol requerido para esta ruta específica desde la metadata (app.routes.ts)
-  const rolRequerido = route.data['expectedRole'];
+  // 2. Obtener los roles permitidos desde los datos de la ruta (soporta string o string[])
+  const rolesPermitidos: string | string[] = route.data['expectedRole'];
 
-  // 3. Verificar si el rol del usuario coincide con el requerido
-  if (rolRequerido && usuarioActual.rol !== rolRequerido) {
-    // Si el rol no coincide, lo redirigimos a su panel correcto para evitar que quede atrapado
-    if (usuarioActual.rol === 'admin') {
-      router.navigate(['/admin-dashboard']);
-    } else {
-      router.navigate(['/user-dashboard']);
+  if (rolesPermitidos) {
+    const rolUsuario = (usuarioActual.rol || '').toLowerCase().trim();
+    
+    // Normalizar a arreglo
+    const listaRoles = Array.isArray(rolesPermitidos)
+      ? rolesPermitidos.map(r => r.toLowerCase().trim())
+      : [rolesPermitidos.toLowerCase().trim()];
+
+    // 3. Validar si el rol del usuario está dentro de los permitidos
+    if (!listaRoles.includes(rolUsuario)) {
+      alert('Acceso Denegado: No tienes permisos suficientes para ingresar a esta sección.');
+
+      // Redirección inteligente al panel correspondiente según su rol
+      if (rolUsuario === 'admin' || rolUsuario === 'administrador') {
+        router.navigate(['/admin-dashboard']);
+      } else {
+        router.navigate(['/user-dashboard']);
+      }
+      return false;
     }
-    return false;
   }
 
-  // Si pasa todas las validaciones, se le permite el acceso a la ruta
+  // Si está autenticado y tiene el rol permitido, pasa la ruta
   return true;
 };

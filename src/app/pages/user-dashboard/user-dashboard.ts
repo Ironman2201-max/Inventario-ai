@@ -14,15 +14,17 @@ export class UserDashboard {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  // Datos del usuario autenticado
+  // Datos del usuario autenticado desde el Signal
   protected readonly usuario = this.authService.currentUser;
 
+  // 📦 Redirección directa al inventario/gestión de patio
   protected irAContenedores(): void {
-    this.router.navigate(['/containers']);
+    this.router.navigate(['/contenedores/inventario']);
   }
 
+  // 🧾 Redirección al formulario de emisión de facturas DIAN
   protected irAFacturacion(): void {
-    this.router.navigate(['/invoices']);
+    this.router.navigate(['/facturacion']);
   }
 
   protected logout(): void {

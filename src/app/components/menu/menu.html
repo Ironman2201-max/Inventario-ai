@@ -1,17 +1,24 @@
 @if (usuario(); as u) {
   <nav class="sidebar">
+    
+    <!-- Encabezado con datos del Usuario -->
     <div class="sidebar-header">
       <h3>Mi Sistema</h3>
       <span class="user-name">{{ u.nombre }}</span>
-      <span class="badge" [class.admin]="u.rol === 'admin'" [class.user]="u.rol === 'user'">
+      <span 
+        class="badge" 
+        [class.admin]="esAdmin()" 
+        [class.user]="!esAdmin()"
+      >
         {{ u.rol }}
       </span>
     </div>
 
     <ul class="nav-links">
 
+      <!-- Inicio dinámico según el Rol -->
       <li>
-        @if (u.rol === 'admin') {
+        @if (esAdmin()) {
           <a routerLink="/admin-dashboard" routerLinkActive="active">
             <span>🏠</span>
             <span>Inicio Admin</span>
@@ -24,21 +31,20 @@
         }
       </li>
 
-      <li>
-        <a routerLink="/compras" routerLinkActive="active">
-          <span>🛒</span>
-          <span>Mis Compras</span>
-        </a>
-      </li>
+      <!-- 🛡️ VISTAS ACCESIBLES PARA AMBOS ROLES (ADMIN Y OPERADOR) -->
+      @if (esOperador()) {
+        
+        @if (esAdmin()) {
+          <li class="separator">Panel de Control</li>
 
-      @if (u.rol === 'admin') {
-        <li class="separator">Panel de Control</li>
+          <li>
+            <a routerLink="/gestion-usuarios" routerLinkActive="active">👥 Gestión de Usuarios</a>
+          </li>
+        } @else {
+          <li class="separator">Operaciones de Terminal</li>
+        }
 
-        <li>
-          <a routerLink="/gestion-usuarios" routerLinkActive="active">👥 Gestión de Usuarios</a>
-        </li>
-
-        <!-- Submenú: Operaciones de Patio -->
+        <!-- Submenú Desplegable: Operaciones de Patio -->
         <li class="dropdown-wrapper">
           <button
             type="button"
@@ -55,45 +61,53 @@
 
           <ul class="dropdown-list" [class.open]="menuPatioAbierto()">
             <li>
-              <a routerLink="/contenedores/registro" routerLinkActive="active" (click)="cerrarMenuPatio()">
+              <a (click)="navegarYcerrar('/contenedores/registro')">
                 🚛 Registro de Entrada
               </a>
             </li>
             <li>
-              <a routerLink="/contenedores/inventario" routerLinkActive="active" (click)="cerrarMenuPatio()">
+              <a (click)="navegarYcerrar('/contenedores/inventario')">
                 📦 Inventario de Patio
               </a>
             </li>
             <li>
-              <a routerLink="/contenedores/salida" routerLinkActive="active" (click)="cerrarMenuPatio()">
+              <a (click)="navegarYcerrar('/contenedores/salida')">
                 📤 Registro de Salida
               </a>
             </li>
             <li>
-              <a routerLink="/contenedores/historial" routerLinkActive="active" (click)="cerrarMenuPatio()">
+              <a (click)="navegarYcerrar('/contenedores/historial')">
                 📋 Historial de Contenedores
               </a>
             </li>
           </ul>
         </li>
 
+        <!-- Módulo de Facturación Electrónica DIAN -->
         <li>
-          <a routerLink="/facturacion" routerLinkActive="active-menu">🧾 Facturación Electrónica</a>
+          <a routerLink="/facturacion" routerLinkActive="active">🧾 Facturación Electrónica</a>
         </li>
         <li>
-          <a routerLink="/facturacion-historial" routerLinkActive="active-menu">📋 Historial de Facturas</a>
+          <a routerLink="/facturacion-historial" routerLinkActive="active">📋 Historial de Facturas</a>
         </li>
-        <li>
-          <a routerLink="/reportes" routerLinkActive="active">📊 Reportes del Sistema</a>
-        </li>
-        <li>
-          <a routerLink="/configuracion" routerLinkActive="active">⚙️ Ajustes Globales</a>
-        </li>
+
+        <!-- Módulos Exclusivos de Administrador -->
+        @if (esAdmin()) {
+          <li>
+            <a routerLink="/reportes" routerLinkActive="active">📊 Reportes del Sistema</a>
+          </li>
+          <li>
+            <a routerLink="/configuracion" routerLinkActive="active">⚙️ Ajustes Globales</a>
+          </li>
+        }
+
       }
+
     </ul>
 
+    <!-- Pie del Menú -->
     <div class="sidebar-footer">
-      <button (click)="logout()" class="btn-logout">🚪 Cerrar Sesión</button>
+      <button type="button" (click)="logout()" class="btn-logout">🚪 Cerrar Sesión</button>
     </div>
   </nav>
 }
